@@ -1,0 +1,93 @@
+:host {
+  display: block;
+  min-height: 100vh;
+  color: var(--p-text-color);
+  background:
+    radial-gradient(
+      circle at top left,
+      color-mix(in srgb, var(--p-primary-color) 18%, transparent),
+      transparent 24rem
+    ),
+    var(--p-surface-950);
+}
+
+.app-shell {
+  width: min(1120px, 100%);
+  margin: 0 auto;
+  padding: 1rem 1rem 6rem;
+}
+
+.app-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem 0 1.25rem;
+}
+
+h1 {
+  color: var(--p-surface-0);
+  font-size: clamp(2rem, 8vw, 4rem);
+  line-height: 0.95;
+}
+
+.subtitle {
+  max-width: 38rem;
+  margin-top: 0.5rem;
+  color: var(--p-text-muted-color);
+}
+
+.bottom-nav {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 20;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 0.25rem;
+  padding: 0.5rem max(0.5rem, env(safe-area-inset-left)) calc(0.5rem + env(safe-area-inset-bottom));
+  border-top: 1px solid color-mix(in srgb, var(--p-content-border-color) 78%, transparent);
+  background: color-mix(in srgb, var(--p-surface-900) 94%, transparent);
+  backdrop-filter: blur(16px);
+}
+
+:host ::ng-deep .nav-item {
+  width: 100%;
+  min-height: 3.25rem;
+  justify-content: center;
+  border-radius: 0.5rem;
+  font-size: 0.72rem;
+}
+
+:host ::ng-deep .nav-item .p-button-label {
+  display: block;
+  flex: 0 0 auto;
+}
+
+:host ::ng-deep .nav-item .p-button-icon {
+  margin: 0;
+}
+
+.alert-panel {
+  margin-bottom: 1rem;
+  padding: 1rem;
+  color: var(--p-red-200);
+  background: color-mix(in srgb, var(--p-red-950) 70%, var(--p-surface-900));
+}
+
+@media (min-width: 820px) {
+  .app-shell {
+    padding: 2rem 1.5rem 3rem;
+  }
+
+  .bottom-nav {
+    position: sticky;
+    top: 0;
+    bottom: auto;
+    width: min(720px, 100%);
+    margin: 0 auto 1rem;
+    border: 1px solid color-mix(in srgb, var(--p-content-border-color) 78%, transparent);
+    border-radius: 0.75rem;
+    padding: 0.4rem;
+  }
+}

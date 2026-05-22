@@ -1,0 +1,17 @@
+{
+  "name": "Reminder",
+  "short_name": "Reminder",
+  "description": "Calendario offline per note, todo e template ricorrenti.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#f8fafc",
+  "theme_color": "#2563eb",
+  "icons": [
+    {
+      "src": "favicon.ico",
+      "sizes": "48x48 64x64",
+      "type": "image/x-icon"
+    }
+  ]
+}

@@ -1,117 +1,160 @@
-You are an expert Senior Frontend Architect specializing in **Angular 21**, **TypeScript**, **PrimeNG 21**, **TailwindCSS 4**, **NgRx Signals (v20+)**, and **Offline-First Architecture**.
+# Reminder - Tech Stack e Regole di Progetto
 
-Your goal is to write scalable, maintainable, performant, and accessible code. You adhere strictly to the following technical constraints and best practices:
+Questo progetto e una PWA mobile-first e offline-first realizzata con **Angular 21**, **TypeScript**, **PrimeNG 21**, **TailwindCSS 4**, **NgRx Signals** e **idb-keyval**.
 
-## 1. Core Technologies & Architecture
+L'obiettivo e scrivere codice scalabile, mantenibile, accessibile e performante per un calendario personale di note, todo e template ricorrenti salvati localmente sul dispositivo.
 
-- **Framework**: Angular 21 (Standalone components by default).
+## 1. Stack Confermato
 
-- **UI Library**: PrimeNG 21 (Use the new theming engine/tokens).
+- **Framework**: Angular 21.
+- **Linguaggio**: TypeScript con typing stretto.
+- **UI library**: PrimeNG 21 con theming engine e token.
+- **Styling**: TailwindCSS 4.
+- **State management**: NgRx Signals (`@ngrx/signals`, `signalStore`).
+- **Persistenza locale**: idb-keyval come wrapper IndexedDB.
+- **Test runner**: Vitest tramite configurazione Angular.
+- **Icone**: PrimeIcons, salvo esigenze specifiche future.
 
-- **Styling**: TailwindCSS 4 (Utility-first, integrated with PrimeNG tokens).
+## 2. Intent Tecnico della v1
 
-- **State Management**: NgRx Signals (@ngrx/signals - signalStore).
+La v1 deve funzionare come applicazione locale installabile/cacheabile, senza backend e senza account.
 
-- **Persistence**: idb-keyval (IndexedDB wrapper) - Offline First approach.
+- IndexedDB e la fonte persistente dei dati.
+- Lo stato runtime vive negli store NgRx Signals.
+- I componenti non accedono direttamente a IndexedDB.
+- Non e prevista sincronizzazione cloud.
+- Non sono previste notifiche push nella v1.
+- Le note ricorrenti sono template manuali copiabili nel giorno corrente, non ricorrenze automatiche.
 
-- **Architecture**:
+## 3. Architettura Applicativa
 
-  - **Smart Components (Pages/Features)**: Handle data fetching via Stores/Services connecting to local storage.
+- **Pages / Feature components**: componenti smart collegati a routing, store e use case dell'app.
+- **UI components**: componenti presentazionali, riutilizzabili, senza conoscenza della persistenza o dello store globale.
+- **Stores**: `signalStore` dedicati alla gestione di collezioni, filtri, selezioni e stato UI rilevante.
+- **Persistence services**: servizi dedicati che incapsulano `idb-keyval`.
+- **Models**: tipi TypeScript stretti per le entita persistite e per gli input/output dei componenti.
 
-  - **Dumb Components (UI)**: Pure presentation, reusable, strictly typed input() and output().
+Struttura raccomandata:
 
-  - **Directory Structure**: Reusable UI components go into src/app/shared/ui/ or libs/ui. Feature components go into src/app/features/.
+- `src/app/features/`: pagine e feature verticali.
+- `src/app/shared/ui/`: componenti UI generici e riutilizzabili.
+- `src/app/shared/data-access/`: servizi di persistenza e accesso dati condivisi.
+- `src/app/shared/models/`: interfacce e tipi condivisi.
 
-## 2. Angular 21 Best Practices
+## 4. Dominio v1
 
-- **Strict Typing**: No any. Use unknown or strictly defined interfaces.
+Le entita concettuali da modellare sono:
 
-- **Standalone**: Do NOT verify standalone: true (it is default).
+- `CalendarNote`: nota assegnata a una data.
+- `TodoItem`: task non ancora assegnato a una data.
+- `Category`: categoria riutilizzabile.
+- `Tag`: tag riutilizzabile.
+- `RecurringNoteTemplate`: template manuale copiabile nelle note del giorno corrente.
 
-- **Dependency Injection**: Use inject() function, avoiding constructor injection.
+Gli schemi definitivi possono evolvere durante l'implementazione, ma devono sempre rispettare questi vincoli:
 
-- **Signals API**:
+- Ogni entita persistita ha un ID univoco generato client-side.
+- Le date persistite devono usare una strategia coerente e documentata, preferibilmente stringhe ISO quando attraversano lo storage.
+- Categoria e tag devono essere riutilizzabili e ricercabili.
+- I template ricorrenti non devono creare note future in automatico.
 
-  - Use input(), input.required(), output(), model(), viewChild().
+## 5. Angular 21 Rules
 
-  - Use computed() for derived state.
+- Usare componenti standalone. Non specificare `standalone: true` quando Angular lo considera gia default.
+- Usare `ChangeDetectionStrategy.OnPush` per tutti i componenti.
+- Usare `inject()` per la dependency injection, evitando constructor injection.
+- Non usare `any`; usare tipi espliciti o `unknown` quando necessario.
+- Usare `input()`, `input.required()`, `output()`, `model()` e `viewChild()` dove appropriato.
+- Usare `computed()` per stato derivato.
+- Minimizzare `effect()`; preferire computed state, metodi dello store o flussi espliciti.
+- Usare sempre il nuovo control flow Angular: `@if`, `@for`, `@switch`.
+- Non usare `*ngIf`, `*ngFor` o `*ngSwitch`.
+- Non usare `@HostBinding` o `@HostListener`; usare la proprieta `host` nel decorator.
 
-  - **Effect**: Minimize effect(). Prefer computed or rxMethod for side effects.
+## 6. NgRx Signals Rules
 
-- **Control Flow**: ALWAYS use @if, @for, @switch. Do not use *ngIf or *ngFor.
+- Definire gli store con `signalStore`.
+- Usare `withState`, `withComputed`, `withMethods` e `withHooks`.
+- Usare `withEntities` per collezioni CRUD quando adatto.
+- Usare `patchState` per aggiornamenti immutabili.
+- Caricare lo stato iniziale da IndexedDB tramite `onInit` dello store o tramite initializer dedicato.
+- Gestire le operazioni asincrone in modo esplicito, con servizi Promise-based e store che espongono metodi chiari.
+- Tenere separati stato persistito, filtri di ricerca e stato UI temporaneo.
 
-- **Change Detection**: Always ChangeDetectionStrategy.OnPush.
+## 7. Persistenza Offline con idb-keyval
 
-- **Host Elements**: Do NOT use @HostBinding or @HostListener. Use the host: {} property in the component decorator.
+- Incapsulare `idb-keyval` in servizi dedicati, ad esempio `CalendarNotesPersistenceService`, `TodosPersistenceService` o un `StorageService` condiviso.
+- Non chiamare `get`, `set`, `del` o altre API `idb-keyval` direttamente dai componenti.
+- Gestire le Promise con `async/await` nei servizi.
+- Gli store devono orchestrare caricamento, salvataggio, aggiornamento ed eliminazione tramite i servizi.
+- Lo storage deve essere locale e autosufficiente: l'app deve continuare a funzionare senza rete.
+- Prevedere versionamento/migrazione dati solo quando diventa necessario; non introdurre complessita prematura nella v1.
 
-## 3. UI, PrimeNG 21 & TailwindCSS 4 Strategy
+## 8. UI, PrimeNG e Tailwind
 
-- **Semantic Styling (CRITICAL)**:
+- La home deve avere il calendario mensile come vista primaria.
+- Usare un solo PrimeNG `DatePicker` inline come calendario della Home.
+- Inserire evidenze di giorno corrente, giorno selezionato e conteggio note tramite template del `DatePicker`, non tramite un calendario custom duplicato.
+- Usare componenti PrimeNG per controlli standard: `p-button`, `pInputText`, `pTextarea`, `p-select`, `p-multiselect`, dialog, form controls, tab/menu/navigation dove utile.
+- Non usare input/select/textarea HTML nativi non decorati quando esiste un componente o direttiva PrimeNG adatta.
+- Configurare e mantenere il tema dark PrimeNG per l'interfaccia principale.
+- Usare Tailwind per layout, spacing, griglie, responsive design e tipografia.
+- Preferire classi semantiche PrimeNG/Tailwind collegate al tema:
+  - Testo: `text-color`, `text-color-secondary`, `text-primary`.
+  - Background: `bg-surface-0` fino a `bg-surface-950` quando disponibili.
+  - Bordi: token/classi coerenti con le superfici del tema.
+- Evitare colori hardcoded come default, salvo variazioni intenzionali e motivate.
+- Non costruire una landing page: la prima schermata deve essere l'esperienza utilizzabile dell'app.
+- Progettare per touch: target comodi, spazio sufficiente, bottom navigation o pattern equivalenti se adatti.
+- Evitare layout desktop-first difficili da usare su smartphone.
 
-  - Do NOT hardcode colors (e.g., avoid text-gray-800 or bg-blue-500) unless creating a specific custom variation.
+## 9. Component Reusability
 
-  - Rely on PrimeNG's semantic classes/tokens managed by the theme.
+- I componenti in `src/app/shared/ui/` devono essere presentazionali.
+- I componenti UI ricevono dati tramite `input()` e comunicano eventi tramite `output()`.
+- I componenti UI non leggono store globali e non chiamano servizi di persistenza.
+- Preferire template inline per componenti piccoli sotto circa 50 righe.
+- Estrarre componenti solo quando riducono duplicazione reale o rendono piu chiaro un workflow.
 
-  - **Text**: Use text-color (body), text-color-secondary (muted), text-primary (brand).
+## 10. Ricerca e Filtri
 
-  - **Backgrounds**: Use bg-surface-0 through bg-surface-950 (or bg-ground) to respect Light/Dark modes automatically.
+La ricerca deve supportare:
 
-  - **Borders**: Use border-surface.
+- Range data.
+- Titolo.
+- Descrizione.
+- Categoria.
+- Tag.
 
-- **Layouts**: Use Tailwind for layout (flex, grid, gap, p-4, m-2) and typography sizes (text-xl, font-bold), but let PrimeNG handle the skin (colors/feel).
+Le funzioni di ricerca devono lavorare sui dati locali gia caricati o recuperati da IndexedDB. La logica di filtro deve restare testabile e separata dalla UI quando possibile.
 
-- **PrimeNG Components**:
+## 11. Accessibilita
 
-  - Use <p-button>, <p-table>, etc., instead of HTML natives where possible.
+- Usare HTML semantico: `header`, `main`, `section`, `nav`, `footer` quando appropriato.
+- Ogni controllo interattivo solo-icon deve avere `aria-label`.
+- Preservare navigabilita da tastiera.
+- Verificare stati focus visibili.
+- Usare label associate agli input.
+- Non affidare informazioni essenziali solo al colore.
 
-  - Use the unstyled prop ONLY if you need to completely rewrite the component structure (rare).
+## 12. Testing
 
-- **Icons**: Use PrimeIcons or an SVG solution standard to the project.
+- Usare Vitest per unit test e component test disponibili nel progetto quando l'utente richiede esplicitamente di farlo.
+- Non eseguire test automatici unit/component senza richiesta esplicita dell'utente.
+- Non eseguire test manuali o end-to-end: questa verifica resta responsabilita dell'utente.
+- Progettare store, servizi di persistenza e funzioni di filtro in modo che siano testabili con casi mirati.
+- Coprire almeno:
+  - Creazione, modifica ed eliminazione note.
+  - Conversione todo in nota del giorno corrente.
+  - Creazione template ricorrente da nota.
+  - Copia template ricorrente nel giorno corrente.
+  - Ricerca per data, testo, categoria e tag.
 
-## 4. State Management (NgRx Signals)
+## 13. Regole di Qualita
 
-- **Store Definition**: Use signalStore from @ngrx/signals.
-
-- **Features**: Utilize withState, withComputed, withMethods, and withHooks.
-
-- **Entities**: Use withEntities for collection management (CRUD).
-
-- **Async Operations**: Use rxMethod paired with pipe and tapResponse (from @ngrx/operators) for side effects (IndexedDB operations).
-
-- **Immutability**: Use patchState for updates.
-
-- **Initialization**: Load initial state from storage using the `onInit` hook within the store or a dedicated initializer.
-
-## 5. Data Persistence & Offline Strategy (idb-keyval)
-
-- **Services**: Abstract `idb-keyval` calls into dedicated services (e.g., `StorageService`, `TodosPersistenceService`). Do not call `get/set` directly inside Components.
-
-- **Typing**: Create strict TypeScript interfaces for all stored entities. Ensure dates are handled correctly (serialized as strings or kept as Date objects depending on IndexedDB support).
-
-- **Async Handling**: `idb-keyval` returns Promises.
-
-  - Handle these Promises using `async/await` in Services.
-
-  - Convert to Observables or handle via `rxMethod` in the Signal Store.
-
-- **Data Integrity**: Ensure unique IDs (UUIDs) are generated on the client-side before saving, as there is no backend DB to generate them.
-
-## 6. Component Reusability Standards
-
-- **Folder**: src/app/shared/ui/[component-name]
-
-- **Philosophy**: UI components must be agnostic of the application state. They receive data via input() and emit events via output().
-
-- **Templates**: Prefer inline templates for small (< 50 lines) components.
-
-## 7. Accessibility (A11y)
-
-- Ensure all interactive elements have aria-label if no text is present.
-
-- Use semantic HTML (<header>, <main>, <footer>, <section>).
-
-- Ensure keyboard navigability (PrimeNG handles this mostly, but verify custom interactions).
-
-### Other
-
-**Compact async style** - `.then()/.catch()/.finally()` pattern
+- Mantenere il codice semplice e leggibile.
+- Non introdurre backend, auth, sync cloud, notifiche push o ricorrenze automatiche nella v1.
+- Non aggiungere astrazioni prima che servano.
+- Preferire naming esplicito e coerente con il dominio.
+- Documentare decisioni tecniche non ovvie direttamente nel codice o nei docs.
+- Tenere aggiornati i docs quando una scelta di prodotto o architettura cambia.

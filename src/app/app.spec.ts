@@ -11,13 +11,17 @@ describe('App', () => {
   it('should create the app', () => {
     const fixture = TestBed.createComponent(App);
     const app = fixture.componentInstance;
+
     expect(app).toBeTruthy();
   });
 
-  it('should render title', async () => {
+  it('should render the reminder shell', async () => {
     const fixture = TestBed.createComponent(App);
     await fixture.whenStable();
+
     const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('h1')?.textContent).toContain('Hello, reminder');
+
+    expect(compiled.querySelector('h1')?.textContent).toContain('Reminder');
+    expect(compiled.textContent).toContain('Calendario');
   });
 });
