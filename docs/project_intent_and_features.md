@@ -49,6 +49,8 @@ Le note servono per ricordare cose, segnare eventi, appuntare informazioni e cos
 - Una nota puo avere piu tag.
 - Categorie e tag sono riutilizzabili nella creazione e modifica delle note.
 - Categorie e tag sono criteri di ricerca e filtro.
+- Le categorie hanno nome, colore e icona PrimeIcons.
+- L'app parte con una libreria locale di categorie e tag default.
 
 ### Template Ricorrenti
 
@@ -91,6 +93,20 @@ La ricerca deve permettere di trovare note e contenuti salvati usando:
 
 La ricerca deve funzionare offline sui dati locali.
 
+### Libreria e Dati
+
+La sezione Libreria raccoglie la gestione delle tassonomie e delle operazioni locali sui dati.
+
+Comportamento previsto:
+
+- Creazione ed eliminazione di categorie riutilizzabili con nome, colore e icona.
+- Creazione ed eliminazione di tag riutilizzabili.
+- Eliminando una categoria, note, todo e template collegati restano salvati ma perdono il riferimento alla categoria.
+- Eliminando un tag, il tag viene rimosso da note, todo e template collegati.
+- Export di un backup JSON locale con note, todo, template, categorie e tag.
+- Import di backup JSON con validazione della versione e sostituzione completa dei dati locali.
+- Reset del database locale con ricreazione della libreria default.
+
 ## Entita Concettuali
 
 Queste entita descrivono il dominio della v1 senza imporre ancora uno schema definitivo:
@@ -100,6 +116,9 @@ Queste entita descrivono il dominio della v1 senza imporre ancora uno schema def
 - `Category`: categoria riutilizzabile.
 - `Tag`: tag riutilizzabile.
 - `RecurringNoteTemplate`: template manuale copiabile nel giorno corrente.
+- `ReminderBackup`: formato JSON versionato per export/import dei dati locali.
+
+Le note calendario mantengono anche una sorgente (`manual`, `todo`, `template`) per distinguere se sono state create direttamente, convertite da un todo o copiate da un template ricorrente.
 
 ## Success Criteria
 
@@ -110,21 +129,28 @@ Queste entita descrivono il dominio della v1 senza imporre ancora uno schema def
 - L'utente puo salvare una nota come template ricorrente e riutilizzarla rapidamente.
 - L'utente puo gestire todo non datati e convertirli in note del giorno corrente.
 - L'utente puo cercare contenuti per data, testo, categoria e tag.
+- L'utente puo esportare un backup JSON dei dati locali.
+- L'utente puo importare un backup compatibile sostituendo i dati locali.
+- L'utente puo resettare i dati mantenendo una libreria default pronta all'uso.
 - L'app rimane utilizzabile senza connessione a internet dopo essere stata installata/cacheata.
 
 ## Funzionalita Sviluppate
 
 - Shell mobile-first con navigazione principale per Home, Todo, Ricorrenti, Cerca e Libreria.
-- Tema PrimeNG Aura configurato in modalita dark tramite selettore `.app-dark`.
+- Tema PrimeNG Aura con interfaccia principale scura basata sui token PrimeNG.
 - Home con un solo calendario PrimeNG `DatePicker` inline.
 - Template custom del `DatePicker` per marcare giorno corrente, giorno selezionato e conteggio note del giorno.
 - Selezione giorno da calendario con aggiornamento della lista note salvate per quel giorno.
 - Creazione note con titolo, descrizione, categoria e tag multipli.
+- Eliminazione note dal giorno selezionato.
 - Creazione todo non datati con conversione in nota del giorno corrente o eliminazione.
 - Creazione template ricorrenti da una nota esistente.
-- Copia manuale di un template ricorrente nelle note del giorno corrente.
+- Copia manuale o eliminazione di un template ricorrente.
 - Ricerca note per testo, range data, categoria e tag.
 - Gestione locale di categorie e tag riutilizzabili.
+- Categorie con colore e icona, piu libreria default iniziale.
+- Export/import backup JSON con formato versionato.
+- Reset del database locale con conferma esplicita.
 - Persistenza offline locale tramite IndexedDB/idb-keyval.
 - Manifest e service worker base per esperienza PWA offline locale.
 
