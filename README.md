@@ -146,12 +146,3 @@ https://elpiu.github.io/reminder/
 ## Dati e privacy
 
 Reminder salva i dati localmente nel browser, usando IndexedDB. Non c'e un backend remoto e non viene richiesta autenticazione. Se cancelli i dati del sito dal browser, anche i dati dell'app possono essere rimossi: usa export/import quando vuoi conservare una copia.
-
-## Fuori scope della v1
-
-- Account utente.
-- Backend remoto.
-- Sincronizzazione multi-dispositivo.
-- Notifiche push.
-- Ricorrenze automatiche giornaliere, settimanali o mensili.
-- Condivisione di note tra utenti.
