@@ -1,0 +1,87 @@
+{
+  "configVersion": 1,
+  "timestamp": 1779466925114,
+  "index": "https://elpiu.github.io/reminder/index.html",
+  "assetGroups": [
+    {
+      "name": "app",
+      "installMode": "prefetch",
+      "updateMode": "prefetch",
+      "cacheQueryOptions": {
+        "ignoreVary": true
+      },
+      "urls": [
+        "https://elpiu.github.io/reminder/favicon.ico",
+        "https://elpiu.github.io/reminder/index.html",
+        "https://elpiu.github.io/reminder/main-VSBRZMVA.js",
+        "https://elpiu.github.io/reminder/manifest.webmanifest",
+        "https://elpiu.github.io/reminder/styles-NKMIKKPS.css"
+      ],
+      "patterns": []
+    },
+    {
+      "name": "assets",
+      "installMode": "lazy",
+      "updateMode": "prefetch",
+      "cacheQueryOptions": {
+        "ignoreVary": true
+      },
+      "urls": [
+        "https://elpiu.github.io/reminder/icons/icon-128x128.png",
+        "https://elpiu.github.io/reminder/icons/icon-144x144.png",
+        "https://elpiu.github.io/reminder/icons/icon-152x152.png",
+        "https://elpiu.github.io/reminder/icons/icon-192x192.png",
+        "https://elpiu.github.io/reminder/icons/icon-384x384.png",
+        "https://elpiu.github.io/reminder/icons/icon-512x512.png",
+        "https://elpiu.github.io/reminder/icons/icon-72x72.png",
+        "https://elpiu.github.io/reminder/icons/icon-96x96.png",
+        "https://elpiu.github.io/reminder/icons/icon.svg",
+        "https://elpiu.github.io/reminder/media/primeicons-4GST5W3O.woff2",
+        "https://elpiu.github.io/reminder/media/primeicons-DHQU4SEP.svg",
+        "https://elpiu.github.io/reminder/media/primeicons-GEFHGEHP.ttf",
+        "https://elpiu.github.io/reminder/media/primeicons-P53SE5CV.woff"
+      ],
+      "patterns": []
+    }
+  ],
+  "dataGroups": [],
+  "hashTable": {
+    "https://elpiu.github.io/reminder/favicon.ico": "0f11ad317f511c5d587a4c5c3be6eab6ef944f0f",
+    "https://elpiu.github.io/reminder/icons/icon-128x128.png": "d0501d5a4d4ed8a39ee6510bcf7ac9645cb1d238",
+    "https://elpiu.github.io/reminder/icons/icon-144x144.png": "e7fe6812e8d899f271ffbf58a32d0d65bcd20d23",
+    "https://elpiu.github.io/reminder/icons/icon-152x152.png": "ab8bec548a6dbb363568340a328708c8d629aadb",
+    "https://elpiu.github.io/reminder/icons/icon-192x192.png": "454684e2e13766f74fe671dbd7203481bd12f0e9",
+    "https://elpiu.github.io/reminder/icons/icon-384x384.png": "571485ec988973014fdd2a4aff1dda5d29d7108f",
+    "https://elpiu.github.io/reminder/icons/icon-512x512.png": "4bf5290050c36cd93e924b757b669e2ae9dae139",
+    "https://elpiu.github.io/reminder/icons/icon-72x72.png": "9ca77cf8cf775c3ec364c81b2229bb3f939570a3",
+    "https://elpiu.github.io/reminder/icons/icon-96x96.png": "4f31ac1e74db73bca1cde07175cdfb1e297fb0c8",
+    "https://elpiu.github.io/reminder/icons/icon.svg": "70a7114fb1e54055e595dee7a25a11ee78b5f443",
+    "https://elpiu.github.io/reminder/index.html": "666baacdb3c0659e05376e4de95b2c51527d5d2d",
+    "https://elpiu.github.io/reminder/main-VSBRZMVA.js": "23b2c0fd63f80970812e5322d9237705be7c3744",
+    "https://elpiu.github.io/reminder/manifest.webmanifest": "beeaf32e453e1c1f54e5c76b78c1e0284151a500",
+    "https://elpiu.github.io/reminder/media/primeicons-4GST5W3O.woff2": "837c1279b6af9d297f34fdb43e6fcc9206a79f32",
+    "https://elpiu.github.io/reminder/media/primeicons-DHQU4SEP.svg": "a07ae39027c1a780b42fd82fad7575c2924d9d28",
+    "https://elpiu.github.io/reminder/media/primeicons-GEFHGEHP.ttf": "3b878ca7e88945a8ec25814810b95367d8977ae6",
+    "https://elpiu.github.io/reminder/media/primeicons-P53SE5CV.woff": "361e3af71bb4e515feead2f787348a92a5527158",
+    "https://elpiu.github.io/reminder/styles-NKMIKKPS.css": "d1eacacf71e330c8a927c064635217c99d7ae6aa"
+  },
+  "navigationUrls": [
+    {
+      "positive": true,
+      "regex": "^\\/.*$"
+    },
+    {
+      "positive": false,
+      "regex": "^\\/(?:.+\\/)?[^/]*\\.[^/]*$"
+    },
+    {
+      "positive": false,
+      "regex": "^\\/(?:.+\\/)?[^/]*__[^/]*$"
+    },
+    {
+      "positive": false,
+      "regex": "^\\/(?:.+\\/)?[^/]*__[^/]*\\/.*$"
+    }
+  ],
+  "navigationRequestStrategy": "performance"
+}
