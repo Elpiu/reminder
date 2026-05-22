@@ -204,7 +204,9 @@ textarea[pTextarea] {
 }
 
 .chip-row {
+  display: flex;
   flex-wrap: wrap;
+  align-items: flex-start;
   gap: 0.45rem;
 }
 
@@ -212,23 +214,44 @@ textarea[pTextarea] {
   display: inline-flex;
   align-items: center;
   gap: 0.35rem;
-  min-height: 2rem;
+  min-height: 1.7rem;
   border: 1px solid color-mix(in srgb, var(--p-content-border-color) 78%, transparent);
   border-radius: 999px;
   color: var(--p-text-color);
   background: color-mix(in srgb, var(--p-surface-800) 76%, transparent);
   font: inherit;
   font-size: 0.82rem;
-  padding: 0.35rem 0.65rem;
+  line-height: 1;
+  padding: 0.25rem 0.55rem;
 }
 
 .chip-with-action {
-  padding-right: 0.25rem;
+  gap: 0.25rem;
+  padding-right: 0.18rem;
 }
 
-.chip-with-action .p-button {
-  width: 1.65rem;
-  height: 1.65rem;
+.chip-remove-button {
+  display: inline-grid;
+  width: 1.35rem;
+  min-width: 1.35rem;
+  height: 1.35rem;
+  min-height: 1.35rem;
+  place-items: center;
+  border: 0;
+  border-radius: 999px;
+  color: var(--p-red-400);
+  background: transparent;
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+}
+
+.chip-remove-button:hover {
+  background: color-mix(in srgb, var(--p-red-400) 14%, transparent);
+}
+
+.chip-remove-button i {
+  font-size: 0.75rem;
 }
 
 .color-dot {
@@ -302,31 +325,6 @@ textarea[pTextarea] {
 
 .reset-panel {
   max-width: 34rem;
-}
-
-.backup-summary {
-  display: grid;
-  gap: 0.35rem;
-  padding: 0.85rem;
-  border: 1px solid color-mix(in srgb, var(--p-content-border-color) 72%, transparent);
-  border-radius: 0.5rem;
-  color: var(--p-text-muted-color);
-  background: color-mix(in srgb, var(--p-surface-800) 76%, var(--p-surface-900));
-  font-size: 0.85rem;
-}
-
-.backup-summary strong {
-  color: var(--p-text-color);
-}
-
-.data-message {
-  color: var(--p-green-200);
-  font-size: 0.85rem;
-  font-weight: 700;
-}
-
-.data-message-error {
-  color: var(--p-red-200);
 }
 
 .muted-copy {

@@ -114,15 +114,14 @@ interface ImportSummary {
                       <i [class]="category.icon" [style.color]="category.color" aria-hidden="true"></i>
                       <i class="color-dot" [style.background]="category.color" aria-hidden="true"></i>
                       {{ category.name }}
-                      <p-button
-                        icon="pi pi-times"
-                        severity="danger"
-                        text="true"
-                        rounded="true"
-                        size="small"
-                        [ariaLabel]="'Elimina categoria ' + category.name"
-                        (onClick)="deleteCategory(category.id)"
-                      />
+                      <button
+                        type="button"
+                        class="chip-remove-button"
+                        [attr.aria-label]="'Elimina categoria ' + category.name"
+                        (click)="deleteCategory(category.id)"
+                      >
+                        <i class="pi pi-times" aria-hidden="true"></i>
+                      </button>
                     </span>
                   } @empty {
                     <span class="empty-state inline-empty">Nessuna categoria.</span>
@@ -153,15 +152,14 @@ interface ImportSummary {
                   @for (tag of store.tags(); track tag.id) {
                     <span class="chip-static chip-with-action">
                       #{{ tag.name }}
-                      <p-button
-                        icon="pi pi-times"
-                        severity="danger"
-                        text="true"
-                        rounded="true"
-                        size="small"
-                        [ariaLabel]="'Elimina tag ' + tag.name"
-                        (onClick)="deleteTag(tag.id)"
-                      />
+                      <button
+                        type="button"
+                        class="chip-remove-button"
+                        [attr.aria-label]="'Elimina tag ' + tag.name"
+                        (click)="deleteTag(tag.id)"
+                      >
+                        <i class="pi pi-times" aria-hidden="true"></i>
+                      </button>
                     </span>
                   } @empty {
                     <span class="empty-state inline-empty">Nessun tag.</span>
