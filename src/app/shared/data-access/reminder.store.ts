@@ -4,13 +4,16 @@ import {
   AppView,
   CalendarNote,
   Category,
+  CategoryDraft,
   RecurringNoteTemplate,
+  ReminderBackup,
   ReminderDatabase,
   SearchFilters,
   Tag,
   TodoItem,
 } from '../models/reminder.models';
 import { buildMonthDays, todayKey } from '../utils/date-utils';
+import { CATEGORY_COLORS, CATEGORY_ICONS } from './default-library';
 import { ReminderPersistenceService } from './reminder-persistence.service';
 
 interface ReminderState extends ReminderDatabase {
@@ -118,8 +121,8 @@ export const ReminderStore = signalStore(
       resetSearchFilters(): void {
         patchState(store, { searchFilters: { ...initialSearchFilters } });
       },
-      async addCategory(name: string): Promise<void> {
-        const trimmed = name.trim();
+      async addCategory(input: CategoryDraft): Promise<void> {
+        const trimmed = input.name.trim();
 
         if (!trimmed || hasName(store.categories(), trimmed)) {
           return;
@@ -129,11 +132,31 @@ export const ReminderStore = signalStore(
         const category: Category = {
           id: createId(),
           name: trimmed,
-          color: nextCategoryColor(store.categories().length),
+          color: input.color || CATEGORY_COLORS[0],
+          icon: input.icon || CATEGORY_ICONS[0].value,
           createdAt: now,
         };
 
         patchState(store, { categories: [...store.categories(), category] });
+        await saveCurrentState();
+      },
+      async deleteCategory(categoryId: string): Promise<void> {
+        patchState(store, {
+          categories: store.categories().filter((category) => category.id !== categoryId),
+          notes: store.notes().map((note) =>
+            note.categoryId === categoryId ? { ...note, categoryId: null } : note,
+          ),
+          todos: store.todos().map((todo) =>
+            todo.categoryId === categoryId ? { ...todo, categoryId: null } : todo,
+          ),
+          templates: store.templates().map((template) =>
+            template.categoryId === categoryId ? { ...template, categoryId: null } : template,
+          ),
+          searchFilters:
+            store.searchFilters().categoryId === categoryId
+              ? { ...store.searchFilters(), categoryId: '' }
+              : store.searchFilters(),
+        });
         await saveCurrentState();
       },
       async addTag(name: string): Promise<void> {
@@ -150,6 +173,55 @@ export const ReminderStore = signalStore(
         };
 
         patchState(store, { tags: [...store.tags(), tag] });
+        await saveCurrentState();
+      },
+      async deleteTag(tagId: string): Promise<void> {
+        patchState(store, {
+          tags: store.tags().filter((tag) => tag.id !== tagId),
+          notes: store.notes().map((note) => ({
+            ...note,
+            tagIds: note.tagIds.filter((id) => id !== tagId),
+          })),
+          todos: store.todos().map((todo) => ({
+            ...todo,
+            tagIds: todo.tagIds.filter((id) => id !== tagId),
+          })),
+          templates: store.templates().map((template) => ({
+            ...template,
+            tagIds: template.tagIds.filter((id) => id !== tagId),
+          })),
+          searchFilters:
+            store.searchFilters().tagId === tagId
+              ? { ...store.searchFilters(), tagId: '' }
+              : store.searchFilters(),
+        });
+        await saveCurrentState();
+      },
+      async resetDatabase(): Promise<void> {
+        const database = persistence.emptyDatabase();
+
+        patchState(store, {
+          ...database,
+          selectedDate: todayKey(),
+          searchFilters: { ...initialSearchFilters },
+          error: null,
+        });
+        await saveCurrentState();
+      },
+      exportDatabase(): ReminderBackup {
+        return persistence.createBackup(snapshot(store));
+      },
+      normalizeBackup(input: unknown): ReminderBackup {
+        return persistence.normalizeBackup(input);
+      },
+      async importDatabase(backup: ReminderBackup): Promise<void> {
+        patchState(store, {
+          ...backup.database,
+          selectedDate: todayKey(),
+          searchFilters: { ...initialSearchFilters },
+          activeView: 'settings',
+          error: null,
+        });
         await saveCurrentState();
       },
       async addNote(input: NoteInput): Promise<void> {
@@ -341,12 +413,6 @@ function createId(): string {
 
 function hasName(items: Array<{ name: string }>, name: string): boolean {
   return items.some((item) => item.name.toLowerCase() === name.toLowerCase());
-}
-
-function nextCategoryColor(index: number): string {
-  const colors = ['#2563eb', '#059669', '#d97706', '#7c3aed', '#db2777', '#0891b2'];
-
-  return colors[index % colors.length];
 }
 
 function sortByUpdatedDesc(first: { updatedAt: string }, second: { updatedAt: string }): number {

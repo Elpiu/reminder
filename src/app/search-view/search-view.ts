@@ -90,7 +90,20 @@ const EMPTY_SEARCH_FILTERS: SearchFilters = {
               [showClear]="true"
               appendTo="body"
               (ngModelChange)="applySearch()"
-            />
+            >
+              <ng-template pTemplate="selectedItem" let-option>
+                <span class="select-option">
+                  <i [class]="option.icon" [style.color]="option.color" aria-hidden="true"></i>
+                  {{ option.label }}
+                </span>
+              </ng-template>
+              <ng-template pTemplate="item" let-option>
+                <span class="select-option">
+                  <i [class]="option.icon" [style.color]="option.color" aria-hidden="true"></i>
+                  {{ option.label }}
+                </span>
+              </ng-template>
+            </p-select>
           </label>
           <label>
             Tag
@@ -118,6 +131,21 @@ const EMPTY_SEARCH_FILTERS: SearchFilters = {
               @if (note.description) {
                 <p>{{ note.description }}</p>
               }
+              <div class="meta-row">
+                @if (category(note.categoryId); as selectedCategory) {
+                  <span class="category-pill">
+                    <i
+                      [class]="selectedCategory.icon"
+                      [style.color]="selectedCategory.color"
+                      aria-hidden="true"
+                    ></i>
+                    {{ selectedCategory.name }}
+                  </span>
+                }
+                @for (tagName of tagNames(note.tagIds); track tagName) {
+                  <span>#{{ tagName }}</span>
+                }
+              </div>
             </div>
           </article>
         } @empty {

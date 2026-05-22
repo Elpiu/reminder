@@ -4,6 +4,7 @@ export interface Category {
   id: string;
   name: string;
   color: string;
+  icon: string;
   createdAt: string;
 }
 
@@ -61,6 +62,12 @@ export interface ReminderDatabase {
   templates: RecurringNoteTemplate[];
 }
 
+export interface ReminderBackup {
+  version: 1;
+  exportedAt: string;
+  database: ReminderDatabase;
+}
+
 export interface CalendarDay {
   date: string;
   day: number;
@@ -86,4 +93,9 @@ export interface TodoDraft {
 
 export interface NamedDraft {
   name: string;
+}
+
+export interface CategoryDraft extends NamedDraft {
+  color: string;
+  icon: string;
 }

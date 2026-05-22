@@ -124,6 +124,7 @@ h3 {
   gap: 0.85rem;
 }
 
+.field-group,
 label {
   display: grid;
   gap: 0.35rem;
@@ -164,8 +165,45 @@ textarea[pTextarea] {
   gap: 0.85rem;
 }
 
-.chip-row {
+.p-tabs {
+  --p-tabs-tabpanel-padding: 1rem 0 0;
+}
+
+.select-option,
+.category-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.select-option i,
+.category-pill i {
+  width: 1rem;
+  text-align: center;
+}
+
+.swatch-row {
   display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+
+.color-swatch {
+  display: inline-grid;
+  width: 2rem;
+  height: 2rem;
+  place-items: center;
+  border: 2px solid color-mix(in srgb, var(--p-content-border-color) 78%, transparent);
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.color-swatch-selected {
+  border-color: var(--p-primary-color);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--p-primary-color) 28%, transparent);
+}
+
+.chip-row {
   flex-wrap: wrap;
   gap: 0.45rem;
 }
@@ -182,6 +220,15 @@ textarea[pTextarea] {
   font: inherit;
   font-size: 0.82rem;
   padding: 0.35rem 0.65rem;
+}
+
+.chip-with-action {
+  padding-right: 0.25rem;
+}
+
+.chip-with-action .p-button {
+  width: 1.65rem;
+  height: 1.65rem;
 }
 
 .color-dot {
@@ -251,6 +298,40 @@ textarea[pTextarea] {
 
 .date-pill {
   margin-bottom: 0.45rem;
+}
+
+.reset-panel {
+  max-width: 34rem;
+}
+
+.backup-summary {
+  display: grid;
+  gap: 0.35rem;
+  padding: 0.85rem;
+  border: 1px solid color-mix(in srgb, var(--p-content-border-color) 72%, transparent);
+  border-radius: 0.5rem;
+  color: var(--p-text-muted-color);
+  background: color-mix(in srgb, var(--p-surface-800) 76%, var(--p-surface-900));
+  font-size: 0.85rem;
+}
+
+.backup-summary strong {
+  color: var(--p-text-color);
+}
+
+.data-message {
+  color: var(--p-green-200);
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.data-message-error {
+  color: var(--p-red-200);
+}
+
+.muted-copy {
+  margin-top: 0.35rem;
+  color: var(--p-text-muted-color);
 }
 
 .item-actions {

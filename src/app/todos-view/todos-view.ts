@@ -73,7 +73,20 @@ const EMPTY_TODO_DRAFT: TodoDraft = {
               placeholder="Nessuna"
               [showClear]="true"
               appendTo="body"
-            />
+            >
+              <ng-template pTemplate="selectedItem" let-option>
+                <span class="select-option">
+                  <i [class]="option.icon" [style.color]="option.color" aria-hidden="true"></i>
+                  {{ option.label }}
+                </span>
+              </ng-template>
+              <ng-template pTemplate="item" let-option>
+                <span class="select-option">
+                  <i [class]="option.icon" [style.color]="option.color" aria-hidden="true"></i>
+                  {{ option.label }}
+                </span>
+              </ng-template>
+            </p-select>
           </label>
 
           <label>
@@ -108,8 +121,15 @@ const EMPTY_TODO_DRAFT: TodoDraft = {
                 <p>{{ todo.description }}</p>
               }
               <div class="meta-row">
-                @if (categoryName(todo.categoryId)) {
-                  <span>{{ categoryName(todo.categoryId) }}</span>
+                @if (category(todo.categoryId); as selectedCategory) {
+                  <span class="category-pill">
+                    <i
+                      [class]="selectedCategory.icon"
+                      [style.color]="selectedCategory.color"
+                      aria-hidden="true"
+                    ></i>
+                    {{ selectedCategory.name }}
+                  </span>
                 }
                 @for (tagName of tagNames(todo.tagIds); track tagName) {
                   <span>#{{ tagName }}</span>

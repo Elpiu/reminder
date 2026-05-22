@@ -1,11 +1,13 @@
 import { inject } from '@angular/core';
 import { ReminderStore } from '../data-access/reminder.store';
-import { CalendarNote } from '../models/reminder.models';
+import { CalendarNote, Category } from '../models/reminder.models';
 import { fromDateKey } from '../utils/date-utils';
 
 export interface SelectOption {
   label: string;
   value: string;
+  color?: string;
+  icon?: string;
 }
 
 export abstract class ReminderViewBase {
@@ -14,7 +16,12 @@ export abstract class ReminderViewBase {
   protected categoryOptions(): SelectOption[] {
     return this.store
       .categories()
-      .map((category) => ({ label: category.name, value: category.id }));
+      .map((category) => ({
+        label: category.name,
+        value: category.id,
+        color: category.color,
+        icon: category.icon,
+      }));
   }
 
   protected tagOptions(): SelectOption[] {
@@ -22,7 +29,11 @@ export abstract class ReminderViewBase {
   }
 
   protected categoryName(categoryId: string | null): string {
-    return this.store.categories().find((category) => category.id === categoryId)?.name ?? '';
+    return this.category(categoryId)?.name ?? '';
+  }
+
+  protected category(categoryId: string | null): Category | undefined {
+    return this.store.categories().find((item) => item.id === categoryId);
   }
 
   protected tagNames(tagIds: string[]): string[] {

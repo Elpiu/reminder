@@ -114,7 +114,20 @@ const EMPTY_NOTE_DRAFT: NoteDraft = {
                 placeholder="Nessuna"
                 [showClear]="true"
                 appendTo="body"
-              />
+              >
+                <ng-template pTemplate="selectedItem" let-option>
+                  <span class="select-option">
+                    <i [class]="option.icon" [style.color]="option.color" aria-hidden="true"></i>
+                    {{ option.label }}
+                  </span>
+                </ng-template>
+                <ng-template pTemplate="item" let-option>
+                  <span class="select-option">
+                    <i [class]="option.icon" [style.color]="option.color" aria-hidden="true"></i>
+                    {{ option.label }}
+                  </span>
+                </ng-template>
+              </p-select>
             </label>
 
             <label>
@@ -152,8 +165,15 @@ const EMPTY_NOTE_DRAFT: NoteDraft = {
                   <p>{{ note.description }}</p>
                 }
                 <div class="meta-row">
-                  @if (categoryName(note.categoryId)) {
-                    <span>{{ categoryName(note.categoryId) }}</span>
+                  @if (category(note.categoryId); as selectedCategory) {
+                    <span class="category-pill">
+                      <i
+                        [class]="selectedCategory.icon"
+                        [style.color]="selectedCategory.color"
+                        aria-hidden="true"
+                      ></i>
+                      {{ selectedCategory.name }}
+                    </span>
                   }
                   @for (tagName of tagNames(note.tagIds); track tagName) {
                     <span>#{{ tagName }}</span>

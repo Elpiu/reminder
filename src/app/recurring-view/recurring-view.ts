@@ -25,8 +25,15 @@ import { ReminderViewBase } from '../shared/ui/reminder-view-base';
                 <p>{{ template.description }}</p>
               }
               <div class="meta-row">
-                @if (categoryName(template.categoryId)) {
-                  <span>{{ categoryName(template.categoryId) }}</span>
+                @if (category(template.categoryId); as selectedCategory) {
+                  <span class="category-pill">
+                    <i
+                      [class]="selectedCategory.icon"
+                      [style.color]="selectedCategory.color"
+                      aria-hidden="true"
+                    ></i>
+                    {{ selectedCategory.name }}
+                  </span>
                 }
                 @for (tagName of tagNames(template.tagIds); track tagName) {
                   <span>#{{ tagName }}</span>
