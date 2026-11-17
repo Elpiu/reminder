@@ -57,5 +57,15 @@
       ]
     }
   ],
-  "workSources": []
+  "workSources": [],
+  "exclude": [
+    "/tests/",
+    "/eslint.config.mjs",
+    "/vitest.config.ts",
+    "/pwa-assets.config.ts",
+    "/backlog/",
+    "/groma/",
+    "/.output/",
+    "/.nuxt/"
+  ]
 }
