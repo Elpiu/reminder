@@ -15,7 +15,7 @@ defineProps<{
         icon="i-lucide-arrow-left"
         color="neutral"
         variant="ghost"
-        aria-label="Indietro"
+        :aria-label="$t('common.back')"
         class="-ml-2"
       />
       <div class="min-w-0 flex-1">
@@ -27,8 +27,8 @@ defineProps<{
         </p>
       </div>
       <slot name="actions">
-        <UButton to="/cerca" icon="i-lucide-search" color="neutral" variant="ghost" aria-label="Cerca" />
-        <UButton to="/impostazioni" icon="i-lucide-settings" color="neutral" variant="ghost" aria-label="Impostazioni" />
+        <UButton to="/cerca" icon="i-lucide-search" color="neutral" variant="ghost" :aria-label="$t('common.search')" />
+        <UButton to="/impostazioni" icon="i-lucide-settings" color="neutral" variant="ghost" :aria-label="$t('common.settings')" />
       </slot>
     </div>
     <slot name="bottom" />

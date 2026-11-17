@@ -8,7 +8,7 @@ export default defineNuxtConfig({
   compatibilityDate: '2026-11-01',
   devtools: { enabled: false },
 
-  modules: ['@nuxt/ui', '@nuxt/eslint', '@vite-pwa/nuxt'],
+  modules: ['@nuxt/ui', '@nuxt/eslint', '@vite-pwa/nuxt', '@nuxtjs/i18n'],
 
   css: ['~/assets/css/main.css'],
 
@@ -81,6 +81,21 @@ export default defineNuxtConfig({
     devOptions: {
       enabled: false,
       type: 'module',
+    },
+  },
+
+  i18n: {
+    strategy: 'no_prefix',
+    defaultLocale: 'it',
+    locales: [
+      { code: 'it', language: 'it-IT', name: 'Italiano', file: 'it.json' },
+      { code: 'en', language: 'en-US', name: 'English', file: 'en.json' },
+    ],
+    detectBrowserLanguage: {
+      useCookie: true,
+      cookieKey: 'reminder_lang',
+      redirectOn: 'root',
+      fallbackLocale: 'it',
     },
   },
 

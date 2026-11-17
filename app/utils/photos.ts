@@ -34,13 +34,13 @@ async function resize(source: ImageBitmap | HTMLImageElement, maxSide: number, q
   canvas.getContext('2d')!.drawImage(source, 0, 0, width, height)
   const toBlob = (type: string) => new Promise<Blob | null>(resolve => canvas.toBlob(resolve, type, quality))
   const blob = (await toBlob('image/webp')) ?? (await toBlob('image/jpeg'))
-  if (!blob) throw new Error('Impossibile elaborare l\'immagine.')
+  if (!blob) throw new AppError('photo.processFailed')
   return { blob, width, height }
 }
 
 /** Ridimensiona, comprime e salva una foto; restituisce l'id. */
 export async function savePhoto(file: File): Promise<string> {
-  if (!file.type.startsWith('image/')) throw new Error('Il file scelto non è un\'immagine.')
+  if (!file.type.startsWith('image/')) throw new AppError('photo.notImage')
   const bitmap = await loadBitmap(file)
   const full = await resize(bitmap, MAX_SIDE, 0.82)
   const thumb = await resize(bitmap, THUMB_SIDE, 0.7)

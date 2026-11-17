@@ -28,3 +28,4 @@ Un middleware globale carica le preferenze. Se l'utente non ha ancora completato
 | [app/pages/benvenuto.vue](../../../../../../app/pages/benvenuto.vue) | [shared/utils/catalog.ts](../../../../../../shared/utils/catalog.ts) | Mostra i pacchetti | Import |
 | [app/pages/benvenuto.vue](../../../../../../app/pages/benvenuto.vue) | [app/utils/actions.ts](../../../../../../app/utils/actions.ts) | Crea le attività iniziali | Chiamata di funzione |
 | [app/pages/benvenuto.vue](../../../../../../app/pages/benvenuto.vue) | [app/components/InstallGuide.vue](../../../../../../app/components/InstallGuide.vue) | Mostra l'installazione | Componente Vue |
+| [app/pages/benvenuto.vue](../../../../../../app/pages/benvenuto.vue) | [app/composables/usePresets.ts](../../../../../../app/composables/usePresets.ts) | Mostra i pacchetti tradotti | Composable Vue |

@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import type { DateKey, Entry } from '#shared/types/models'
 
-useHead({ title: 'Calendario' })
+const fmt = useFmt()
+const { t } = fmt
+useHead({ title: () => t('calendar.title') })
 
 const route = useRoute()
 const router = useRouter()
@@ -15,10 +17,7 @@ const month = ref(initial)
 const year = computed(() => Number(month.value.slice(0, 4)))
 const monthIndex = computed(() => Number(month.value.slice(5, 7)) - 1)
 const grid = computed(() => monthGrid(year.value, monthIndex.value, prefs.value.weekStart))
-const title = computed(() => {
-  const s = new Intl.DateTimeFormat('it-IT', { month: 'long', year: 'numeric' }).format(new Date(year.value, monthIndex.value, 1))
-  return s.charAt(0).toUpperCase() + s.slice(1)
-})
+const title = computed(() => fmt.monthTitle(year.value, monthIndex.value))
 
 const { data: entries } = useLiveQuery(
   () => useDb().entries.where('date').between(grid.value[0]!, grid.value.at(-1)!, true, true).toArray(),
@@ -27,8 +26,8 @@ const { data: entries } = useLiveQuery(
 )
 
 const weekdays = computed(() => {
-  const base = prefs.value.weekStart === 1 ? ['L', 'M', 'M', 'G', 'V', 'S', 'D'] : ['D', 'L', 'M', 'M', 'G', 'V', 'S']
-  return base
+  const order = prefs.value.weekStart === 1 ? [1, 2, 3, 4, 5, 6, 7] : [7, 1, 2, 3, 4, 5, 6]
+  return order.map(d => t(`weekdays.initial.${d}`))
 })
 
 interface DayInfo { ratio: number, notes: number, photos: boolean }
@@ -83,15 +82,15 @@ const perfectDays = computed(() => [...info.value.entries()].filter(([d, i]) => 
 
 <template>
   <div>
-    <AppHeader title="Calendario" />
+    <AppHeader :title="$t('calendar.title')" />
     <main class="px-4 pb-6 pt-4" @touchstart.passive="ts" @touchend.passive="te">
       <div class="mb-3 flex items-center gap-2">
         <h2 class="flex-1 font-serif text-lg font-semibold text-highlighted" aria-live="polite">
           {{ title }}
         </h2>
-        <UButton v-if="month !== today.slice(0, 7)" label="Oggi" size="sm" color="neutral" variant="soft" @click="goToday" />
-        <UButton icon="i-lucide-chevron-left" color="neutral" variant="ghost" aria-label="Mese precedente" @click="shift(-1)" />
-        <UButton icon="i-lucide-chevron-right" color="neutral" variant="ghost" aria-label="Mese successivo" @click="shift(1)" />
+        <UButton v-if="month !== today.slice(0, 7)" :label="$t('common.today')" size="sm" color="neutral" variant="soft" @click="goToday" />
+        <UButton icon="i-lucide-chevron-left" color="neutral" variant="ghost" :aria-label="$t('calendar.prevMonth')" @click="shift(-1)" />
+        <UButton icon="i-lucide-chevron-right" color="neutral" variant="ghost" :aria-label="$t('calendar.nextMonth')" @click="shift(1)" />
       </div>
 
       <div class="grid grid-cols-7 gap-y-1 text-center" role="grid" :aria-label="title">
@@ -105,7 +104,7 @@ const perfectDays = computed(() => [...info.value.entries()].filter(([d, i]) => 
           role="gridcell"
           class="flex flex-col items-center gap-0.5 rounded-xl py-1 focus-visible:outline-2 focus-visible:outline-primary"
           :class="d.startsWith(month) ? '' : 'opacity-35'"
-          :aria-label="`${formatLongDate(d)}${info.get(d)?.notes ? `, ${info.get(d)!.notes} note` : ''}`"
+          :aria-label="`${fmt.longDate(d)}${info.get(d)?.notes ? `, ${$t('calendar.notesCount', info.get(d)!.notes)}` : ''}`"
         >
           <span class="relative flex size-11 items-center justify-center">
             <svg class="absolute inset-0 -rotate-90" viewBox="0 0 44 44" aria-hidden="true">
@@ -136,15 +135,15 @@ const perfectDays = computed(() => [...info.value.entries()].filter(([d, i]) => 
       </div>
 
       <div class="mt-4 flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted">
-        <span class="inline-flex items-center gap-1"><span class="size-2.5 rounded-full border-2 border-primary" /> attività completate</span>
-        <span class="inline-flex items-center gap-1"><span class="size-1.5 rounded-full bg-primary/70" /> note</span>
-        <span class="inline-flex items-center gap-1"><span class="size-1.5 rounded-full bg-amber-500/80" /> foto</span>
+        <span class="inline-flex items-center gap-1"><span class="size-2.5 rounded-full border-2 border-primary" /> {{ $t('calendar.legendDone') }}</span>
+        <span class="inline-flex items-center gap-1"><span class="size-1.5 rounded-full bg-primary/70" /> {{ $t('calendar.legendNotes') }}</span>
+        <span class="inline-flex items-center gap-1"><span class="size-1.5 rounded-full bg-amber-500/80" /> {{ $t('calendar.legendPhotos') }}</span>
       </div>
 
       <dl class="mt-6 grid grid-cols-2 gap-3">
         <div class="rounded-xl border border-default bg-elevated/40 p-3">
           <dt class="text-xs text-muted">
-            Giorni completi
+            {{ $t('calendar.perfectDays') }}
           </dt>
           <dd class="font-serif text-2xl font-semibold text-highlighted">
             {{ perfectDays }}
@@ -152,7 +151,7 @@ const perfectDays = computed(() => [...info.value.entries()].filter(([d, i]) => 
         </div>
         <div class="rounded-xl border border-default bg-elevated/40 p-3">
           <dt class="text-xs text-muted">
-            Note nel mese
+            {{ $t('calendar.monthNotes') }}
           </dt>
           <dd class="font-serif text-2xl font-semibold text-highlighted">
             {{ monthNotes }}

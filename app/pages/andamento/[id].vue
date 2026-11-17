@@ -14,15 +14,12 @@ const { data: entries } = useLiveQuery(
   [] as Entry[],
 )
 
-useHead({ title: () => activity.value?.name ?? 'Attività' })
+const f = useFmt()
+const { t } = f
+useHead({ title: () => activity.value?.name ?? t('progress.activities') })
 
 const period = ref('30')
-const periods = [
-  { label: '7 g', value: '7' },
-  { label: '30 g', value: '30' },
-  { label: '3 mesi', value: '90' },
-  { label: 'Anno', value: '365' },
-]
+const periods = computed(() => ['7', '30', '90', '365'].map(value => ({ label: t(`progress.p${value}`), value })))
 const today = todayKey()
 const from = computed(() => addDays(today, -(Number(period.value) - 1)))
 
@@ -51,7 +48,7 @@ const chart = computed(() => {
     const out: { label: string, value: number | null }[] = []
     for (let i = 0; i < days.length; i += 7) {
       const vals = days.slice(i, i + 7).map(d => byDate.get(d)?.value).filter((v): v is number => typeof v === 'number')
-      out.push({ label: formatShortDate(days[i]!), value: vals.length ? vals.reduce((s, v) => s + v, 0) / vals.length : null })
+      out.push({ label: f.shortDate(days[i]!), value: vals.length ? vals.reduce((s, v) => s + v, 0) / vals.length : null })
     }
     return out
   }
@@ -71,14 +68,14 @@ const choiceCounts = computed(() => {
 })
 
 const recent = computed(() => [...entries.value].reverse().slice(0, 30))
-const fmt = (v: number) => activity.value ? formatValue(activity.value, Math.round(v * 100) / 100) || String(v) : String(v)
+const fmt = (v: number) => activity.value ? f.value(activity.value, Math.round(v * 100) / 100) || String(v) : String(v)
 
 const menu = computed(() => activity.value
   ? [[
-      { label: 'Modifica', icon: 'i-lucide-pencil', onSelect: () => editor.open({ activity: activity.value }) },
-      { label: activity.value.archived ? 'Ripristina' : 'Archivia', icon: 'i-lucide-archive', onSelect: () => setArchived(activity.value!, !activity.value!.archived) },
+      { label: t('common.edit'), icon: 'i-lucide-pencil', onSelect: () => editor.open({ activity: activity.value }) },
+      { label: activity.value.archived ? t('progress.restore') : t('progress.archive'), icon: 'i-lucide-archive', onSelect: () => setArchived(activity.value!, !activity.value!.archived) },
     ], [
-      { label: 'Elimina con tutte le registrazioni', icon: 'i-lucide-trash-2', color: 'error' as const, onSelect: async () => {
+      { label: t('progress.deleteAll'), icon: 'i-lucide-trash-2', color: 'error' as const, onSelect: async () => {
         await deleteActivity(activity.value!)
         navigateTo('/andamento')
       } },
@@ -88,10 +85,10 @@ const menu = computed(() => activity.value
 
 <template>
   <div>
-    <AppHeader :title="activity?.name ?? 'Attività'" :subtitle="activity ? recurrenceLabel(activity.recurrence) : undefined" back="/andamento">
+    <AppHeader :title="activity?.name ?? $t('progress.activities')" :subtitle="activity ? f.recurrence(activity.recurrence) : undefined" back="/andamento">
       <template #actions>
         <UDropdownMenu v-if="activity" :items="menu" :content="{ align: 'end' }">
-          <UButton icon="i-lucide-ellipsis-vertical" color="neutral" variant="ghost" aria-label="Azioni attività" />
+          <UButton icon="i-lucide-ellipsis-vertical" color="neutral" variant="ghost" :aria-label="$t('progress.actionsAria')" />
         </UDropdownMenu>
       </template>
     </AppHeader>
@@ -101,11 +98,11 @@ const menu = computed(() => activity.value
         <ActivityIcon :icon="activity.icon" :color="activity.color" size="lg" />
         <div class="min-w-0 flex-1">
           <p class="text-sm text-muted">
-            {{ KIND_INFO[activity.kind].label }}<template v-if="activity.goal">
-              · obiettivo {{ activity.goal.op === 'gte' ? '≥' : '≤' }} {{ formatValue(activity, activity.goal.target) }}
+            {{ f.kindLabel(activity.kind) }}<template v-if="activity.goal">
+              · {{ $t('progress.goal', { op: activity.goal.op === 'gte' ? '≥' : '≤', value: f.value(activity, activity.goal.target) }) }}
             </template>
           </p>
-          <UBadge v-if="activity.archived" label="Archiviata" color="neutral" variant="soft" class="mt-1" />
+          <UBadge v-if="activity.archived" :label="$t('progress.archived')" color="neutral" variant="soft" class="mt-1" />
         </div>
       </div>
 
@@ -114,49 +111,49 @@ const menu = computed(() => activity.value
       <dl class="grid grid-cols-3 gap-2">
         <div class="rounded-xl border border-default bg-elevated/40 p-3">
           <dt class="text-xs text-muted">
-            Serie attuale
+            {{ $t('progress.currentStreak') }}
           </dt>
           <dd class="flex items-baseline gap-1 font-serif text-2xl font-semibold text-highlighted">
             {{ stats.currentStreak }}<UIcon v-if="stats.currentStreak" name="i-lucide-flame" class="size-4 text-orange-500" />
           </dd>
           <dd class="text-xs text-muted">
-            {{ stats.streakUnit }}
+            {{ f.streakUnit(stats.streakUnit, stats.currentStreak) }}
           </dd>
         </div>
         <div class="rounded-xl border border-default bg-elevated/40 p-3">
           <dt class="text-xs text-muted">
-            Record
+            {{ $t('progress.record') }}
           </dt>
           <dd class="font-serif text-2xl font-semibold text-highlighted">
             {{ stats.bestStreak }}
           </dd>
           <dd class="text-xs text-muted">
-            {{ stats.streakUnit }}
+            {{ f.streakUnit(stats.streakUnit, stats.bestStreak) }}
           </dd>
         </div>
         <div class="rounded-xl border border-default bg-elevated/40 p-3">
           <dt class="text-xs text-muted">
-            {{ activity.recurrence.type === 'none' ? 'Registrazioni' : 'Completamento' }}
+            {{ activity.recurrence.type === 'none' ? $t('progress.registrations') : $t('progress.completion') }}
           </dt>
           <dd class="font-serif text-2xl font-semibold text-highlighted">
             {{ activity.recurrence.type === 'none' ? stats.completed : `${Math.round(stats.rate * 100)}%` }}
           </dd>
           <dd v-if="activity.recurrence.type !== 'none'" class="text-xs text-muted">
-            {{ stats.completed }} su {{ stats.expected }}
+            {{ $t('progress.completedOf', { done: stats.completed, total: stats.expected }) }}
           </dd>
         </div>
       </dl>
 
       <section aria-labelledby="map-title">
         <h2 id="map-title" class="mb-2 text-sm font-semibold uppercase tracking-wide text-muted">
-          Ultimo anno
+          {{ $t('progress.lastYear') }}
         </h2>
         <Heatmap :to="today" :weeks="53" :values="heat" :color="activityColor(activity.color)" :week-start="prefs.weekStart" />
       </section>
 
       <section v-if="numeric" aria-labelledby="chart-title">
         <h2 id="chart-title" class="mb-2 text-sm font-semibold uppercase tracking-wide text-muted">
-          Valori
+          {{ $t('progress.values') }}
         </h2>
         <BarChart
           :points="chart"
@@ -168,7 +165,7 @@ const menu = computed(() => activity.value
 
       <section v-if="choiceCounts.length" aria-labelledby="choice-title">
         <h2 id="choice-title" class="mb-2 text-sm font-semibold uppercase tracking-wide text-muted">
-          Scelte
+          {{ $t('progress.choices') }}
         </h2>
         <ul class="space-y-2">
           <li v-for="c in choiceCounts" :key="c.label" class="space-y-1">
@@ -182,14 +179,14 @@ const menu = computed(() => activity.value
 
       <section aria-labelledby="hist-title">
         <h2 id="hist-title" class="mb-2 text-sm font-semibold uppercase tracking-wide text-muted">
-          Registrazioni recenti
+          {{ $t('progress.recent') }}
         </h2>
         <ul v-if="recent.length" class="divide-y divide-default rounded-xl border border-default">
           <li v-for="e in recent" :key="e.id">
             <NuxtLink :to="{ path: '/', query: e.date === today ? {} : { d: e.date } }" class="flex items-start gap-3 px-3 py-2.5 hover:bg-elevated/50">
-              <span class="w-20 shrink-0 text-sm text-muted">{{ formatShortDate(e.date) }}</span>
+              <span class="w-20 shrink-0 text-sm text-muted">{{ f.shortDate(e.date) }}</span>
               <span class="min-w-0 flex-1">
-                <span class="block text-sm font-medium text-highlighted">{{ formatValue(activity, e.value) || '—' }}</span>
+                <span class="block text-sm font-medium text-highlighted">{{ f.value(activity, e.value) || '—' }}</span>
                 <span v-if="e.text" class="diary-text block text-sm text-muted">{{ e.text }}</span>
               </span>
               <UIcon v-if="isComplete(activity, e)" name="i-lucide-check" class="size-4 text-primary" />
@@ -197,7 +194,7 @@ const menu = computed(() => activity.value
           </li>
         </ul>
         <p v-else class="text-sm text-muted">
-          Ancora nessuna registrazione.
+          {{ $t('progress.noRecords') }}
         </p>
       </section>
     </main>
@@ -205,8 +202,8 @@ const menu = computed(() => activity.value
     <UEmpty
       v-else-if="ready"
       icon="i-lucide-search-x"
-      title="Attività non trovata"
-      :actions="[{ label: 'Torna all\'andamento', to: '/andamento' }]"
+      :title="$t('progress.notFound')"
+      :actions="[{ label: $t('progress.back'), to: '/andamento' }]"
       variant="naked"
       class="mt-12"
     />

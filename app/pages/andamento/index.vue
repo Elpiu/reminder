@@ -2,19 +2,16 @@
 import type { Entry } from '#shared/types/models'
 import { LazyActivityEditor } from '#components'
 
-useHead({ title: 'Andamento' })
+const fmt = useFmt()
+const { t } = fmt
+useHead({ title: () => t('progress.title') })
 
 const { prefs } = usePreferences()
 const { data: activities, ready } = useActivities()
 const editor = useOverlay().create(LazyActivityEditor)
 
 const period = ref('30')
-const periods = [
-  { label: '7 giorni', value: '7' },
-  { label: '30 giorni', value: '30' },
-  { label: '3 mesi', value: '90' },
-  { label: 'Anno', value: '365' },
-]
+const periods = computed(() => ['7', '30', '90', '365'].map(value => ({ label: t(`progress.p${value}`), value })))
 
 const today = todayKey()
 const from = computed(() => addDays(today, -(Number(period.value) - 1)))
@@ -41,14 +38,14 @@ const bestStreak = computed(() => rows.value.reduce<null | (typeof rows.value)[n
 
 <template>
   <div>
-    <AppHeader title="Andamento" />
+    <AppHeader :title="$t('progress.title')" />
     <main class="space-y-6 px-4 pb-6 pt-4">
       <UTabs v-model="period" :items="periods" :content="false" size="sm" class="w-full" />
 
       <dl class="grid grid-cols-3 gap-2">
         <div class="rounded-xl border border-default bg-elevated/40 p-3">
           <dt class="text-xs text-muted">
-            Completamento
+            {{ $t('progress.completion') }}
           </dt>
           <dd class="font-serif text-2xl font-semibold text-highlighted">
             {{ overall === null ? '–' : `${overall}%` }}
@@ -56,7 +53,7 @@ const bestStreak = computed(() => rows.value.reduce<null | (typeof rows.value)[n
         </div>
         <div class="rounded-xl border border-default bg-elevated/40 p-3">
           <dt class="text-xs text-muted">
-            Serie migliore
+            {{ $t('progress.bestStreak') }}
           </dt>
           <dd class="font-serif text-2xl font-semibold text-highlighted">
             {{ bestStreak?.stats.currentStreak ?? 0 }}
@@ -67,7 +64,7 @@ const bestStreak = computed(() => rows.value.reduce<null | (typeof rows.value)[n
         </div>
         <div class="rounded-xl border border-default bg-elevated/40 p-3">
           <dt class="text-xs text-muted">
-            Note
+            {{ $t('progress.notes') }}
           </dt>
           <dd class="font-serif text-2xl font-semibold text-highlighted">
             {{ notesCount }}
@@ -77,7 +74,7 @@ const bestStreak = computed(() => rows.value.reduce<null | (typeof rows.value)[n
 
       <section v-if="rows.length" aria-labelledby="act-title">
         <h2 id="act-title" class="mb-2 text-sm font-semibold uppercase tracking-wide text-muted">
-          Attività
+          {{ $t('progress.activities') }}
         </h2>
         <ul class="space-y-2">
           <li v-for="r in rows" :key="r.activity.id">
@@ -92,7 +89,7 @@ const bestStreak = computed(() => rows.value.reduce<null | (typeof rows.value)[n
                     {{ r.activity.name }}
                   </p>
                   <p class="truncate text-xs text-muted">
-                    {{ recurrenceLabel(r.activity.recurrence) }}
+                    {{ fmt.recurrence(r.activity.recurrence) }}
                   </p>
                 </div>
                 <div class="text-right">
@@ -100,7 +97,7 @@ const bestStreak = computed(() => rows.value.reduce<null | (typeof rows.value)[n
                     {{ r.activity.recurrence.type === 'none' ? `${r.stats.completed}×` : `${Math.round(r.stats.rate * 100)}%` }}
                   </p>
                   <p v-if="r.stats.currentStreak" class="flex items-center justify-end gap-0.5 text-xs text-muted">
-                    <UIcon name="i-lucide-flame" class="size-3 text-orange-500" />{{ r.stats.currentStreak }} {{ r.stats.streakUnit }}
+                    <UIcon name="i-lucide-flame" class="size-3 text-orange-500" />{{ r.stats.currentStreak }} {{ fmt.streakUnit(r.stats.streakUnit, r.stats.currentStreak) }}
                   </p>
                 </div>
               </div>
@@ -113,9 +110,9 @@ const bestStreak = computed(() => rows.value.reduce<null | (typeof rows.value)[n
       <UEmpty
         v-else-if="ready"
         icon="i-lucide-chart-no-axes-column"
-        title="Niente da mostrare"
-        description="Crea un'attività e registrala per qualche giorno: qui vedrai serie e progressi."
-        :actions="[{ label: 'Nuova attività', icon: 'i-lucide-plus', onClick: () => { editor.open({}) } }]"
+        :title="$t('progress.emptyTitle')"
+        :description="$t('progress.emptyDescription')"
+        :actions="[{ label: $t('day.newActivity'), icon: 'i-lucide-plus', onClick: () => { editor.open({}) } }]"
         variant="naked"
       />
     </main>

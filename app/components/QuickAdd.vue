@@ -8,6 +8,7 @@ const sending = ref(false)
 const editor = useOverlay().create(LazyNoteEditor)
 const photoInput = useTemplateRef<HTMLInputElement>('photo')
 const toast = useToast()
+const fmt = useFmt()
 
 async function send() {
   const t = text.value.trim()
@@ -19,7 +20,7 @@ async function send() {
   }
   catch (err) {
     text.value = t
-    toast.add({ title: 'Nota non salvata', description: (err as Error).message, color: 'error' })
+    toast.add({ title: fmt.t('quickAdd.saveFailed'), description: fmt.error(err), color: 'error' })
   }
   finally {
     sending.value = false
@@ -38,7 +39,7 @@ async function onPhoto(e: Event) {
     openEditor([await savePhoto(file)])
   }
   catch (err) {
-    toast.add({ title: 'Foto non aggiunta', description: (err as Error).message, color: 'error' })
+    toast.add({ title: fmt.t('photos.failed'), description: fmt.error(err), color: 'error' })
   }
   finally {
     if (photoInput.value) photoInput.value.value = ''
@@ -61,11 +62,11 @@ async function onPhoto(e: Event) {
         aria-hidden="true"
         @change="onPhoto"
       >
-      <UButton icon="i-lucide-camera" color="neutral" variant="ghost" aria-label="Aggiungi una foto" @click="photoInput?.click()" />
+      <UButton icon="i-lucide-camera" color="neutral" variant="ghost" :aria-label="$t('quickAdd.photo')" @click="photoInput?.click()" />
       <UInput
         v-model="text"
-        placeholder="Scrivi qualcosa…"
-        aria-label="Nota veloce"
+        :placeholder="$t('quickAdd.placeholder')"
+        :aria-label="$t('quickAdd.aria')"
         class="flex-1"
         size="lg"
         :ui="{ base: 'rounded-full' }"
@@ -76,7 +77,7 @@ async function onPhoto(e: Event) {
         type="submit"
         icon="i-lucide-send-horizontal"
         :loading="sending"
-        aria-label="Salva nota"
+        :aria-label="$t('quickAdd.save')"
         class="rounded-full"
         size="lg"
       />
@@ -85,7 +86,7 @@ async function onPhoto(e: Event) {
         icon="i-lucide-maximize-2"
         color="neutral"
         variant="ghost"
-        aria-label="Apri editor completo"
+        :aria-label="$t('quickAdd.expand')"
         @click="openEditor()"
       />
     </div>

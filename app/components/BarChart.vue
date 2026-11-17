@@ -21,7 +21,7 @@ const tickEvery = computed(() => Math.ceil(props.points.length / 6))
 
 <template>
   <figure>
-    <svg :viewBox="`0 0 ${W} ${H}`" class="h-auto w-full" role="img" :aria-label="`Grafico: media ${avg === null ? 'nessun dato' : format(avg)}`">
+    <svg :viewBox="`0 0 ${W} ${H}`" class="h-auto w-full" role="img" :aria-label="$t('progress.chartAria', { avg: avg === null ? $t('progress.noData') : format(avg) })">
       <line :x1="PAD" :x2="W" :y1="H - PAD" :y2="H - PAD" stroke="var(--ui-border)" />
       <line
         v-if="goal"
@@ -32,7 +32,7 @@ const tickEvery = computed(() => Math.ceil(props.points.length / 6))
         stroke="var(--ui-text-muted)"
         stroke-dasharray="4 4"
       />
-      <text v-if="goal" :x="W" :y="y(goal) - 3" text-anchor="end" class="fill-(--ui-text-muted) text-[9px]">obiettivo</text>
+      <text v-if="goal" :x="W" :y="y(goal) - 3" text-anchor="end" class="fill-(--ui-text-muted) text-[9px]">{{ $t('progress.chartGoal') }}</text>
       <g v-for="(p, i) in points" :key="i">
         <rect
           v-if="p.value !== null && p.value > 0"
@@ -56,7 +56,7 @@ const tickEvery = computed(() => Math.ceil(props.points.length / 6))
       <text :x="0" :y="PAD - 4" class="fill-(--ui-text-muted) text-[9px]">{{ format(max) }}</text>
     </svg>
     <figcaption v-if="avg !== null" class="mt-1 text-xs text-muted">
-      Media nei giorni registrati: <strong class="text-default">{{ format(avg) }}</strong>
+      {{ $t('progress.chartAverage') }} <strong class="text-default">{{ format(avg) }}</strong>
     </figcaption>
   </figure>
 </template>

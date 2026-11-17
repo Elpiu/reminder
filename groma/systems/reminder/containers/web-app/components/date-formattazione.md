@@ -19,4 +19,4 @@ groma:
 description: Chiavi giorno locali e testi in italiano
 ---
 
-Gestisce le chiavi `YYYY-MM-DD` locali (a mezzogiorno, per evitare problemi col cambio d'ora), l'aritmetica dei giorni, le griglie della settimana e del mese. Formatta in italiano i valori ("1 h 30 min", "8 bicchieri") e i titoli dei giorni ("Oggi", "Ieri", "Martedì 17 novembre").
+Gestisce le chiavi `YYYY-MM-DD` locali (a mezzogiorno, per evitare problemi col cambio d'ora), l'aritmetica dei giorni, le griglie della settimana e del mese. Formatta valori, durate, date e mesi con `Intl` nella lingua ricevuta come parametro; le etichette come "Oggi" o "Ieri" le fornisce chi chiama.

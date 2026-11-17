@@ -16,15 +16,17 @@ const value = computed(() => props.item.entry?.value ?? null)
 const done = computed(() => props.item.status === 'done')
 const progress = computed(() => progressOf(a.value, props.item.entry))
 const pressed = ref(false)
+const fmt = useFmt()
+const { t } = fmt
 
-const summary = computed(() => formatValue(a.value, value.value))
+const summary = computed(() => fmt.value(a.value, value.value))
 
 const subtitle = computed(() => {
   const parts: string[] = []
-  if (props.item.status === 'weekDone') parts.push('Obiettivo della settimana raggiunto')
-  else if (a.value.recurrence.type === 'weekly') parts.push(`${props.item.weekCount ?? 0}/${a.value.recurrence.times} questa settimana`)
+  if (props.item.status === 'weekDone') parts.push(t('row.weekDone'))
+  else if (a.value.recurrence.type === 'weekly') parts.push(t('row.weekCount', { n: props.item.weekCount ?? 0, total: a.value.recurrence.times }))
   if (a.value.goal && ['counter', 'number', 'duration'].includes(a.value.kind)) {
-    parts.push(`obiettivo ${a.value.goal.op === 'gte' ? '≥' : '≤'} ${formatValue(a.value, a.value.goal.target)}`)
+    parts.push(t('row.goal', { op: a.value.goal.op === 'gte' ? '≥' : '≤', value: fmt.value(a.value, a.value.goal.target) }))
   }
   if (a.value.time) parts.push(a.value.time)
   return parts.join(' · ')
@@ -69,7 +71,7 @@ function openSheet() {
         type="button"
         class="rounded-full transition-transform focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
         :class="pressed ? 'scale-90' : ''"
-        :aria-label="a.kind === 'check' ? (done ? `Segna ${a.name} come non fatta` : `Segna ${a.name} come fatta`) : `Registra ${a.name}`"
+        :aria-label="a.kind === 'check' ? (done ? $t('row.markUndone', { name: a.name }) : $t('row.markDone', { name: a.name })) : $t('row.record', { name: a.name })"
         :aria-pressed="a.kind === 'check' ? done : undefined"
         @click="a.kind === 'check' ? toggleCheck() : a.kind === 'counter' ? increment(1) : openSheet()"
       >
@@ -95,7 +97,7 @@ function openSheet() {
           :variant="done ? 'soft' : 'ghost'"
           size="lg"
           square
-          :aria-label="done ? 'Fatto' : 'Da fare'"
+          :aria-label="done ? $t('common.done') : $t('row.todo')"
           @click="toggleCheck"
         />
       </template>
@@ -106,17 +108,17 @@ function openSheet() {
           color="neutral"
           variant="ghost"
           square
-          :aria-label="`Togli da ${a.name}`"
+          :aria-label="$t('row.removeFrom', { name: a.name })"
           @click="increment(-1)"
         />
         <span class="min-w-8 text-center text-sm font-semibold tabular-nums text-highlighted" aria-live="polite">
           {{ typeof value === 'number' ? value : 0 }}<span v-if="a.goal" class="font-normal text-muted">/{{ a.goal.target }}</span>
         </span>
-        <UButton icon="i-lucide-plus" color="primary" variant="soft" size="lg" square :aria-label="`Aggiungi a ${a.name}`" @click="increment(1)" />
+        <UButton icon="i-lucide-plus" color="primary" variant="soft" size="lg" square :aria-label="$t('row.addTo', { name: a.name })" @click="increment(1)" />
       </div>
       <UButton
         v-else-if="a.kind === 'number' || a.kind === 'duration' || a.kind === 'text'"
-        :label="summary || (a.kind === 'text' ? 'Scrivi' : 'Aggiungi')"
+        :label="summary || (a.kind === 'text' ? $t('row.write') : $t('common.add'))"
         :icon="summary ? undefined : a.kind === 'text' ? 'i-lucide-pen-line' : 'i-lucide-plus'"
         :color="summary ? 'primary' : 'neutral'"
         :variant="summary ? 'soft' : 'outline'"

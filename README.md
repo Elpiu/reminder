@@ -2,9 +2,27 @@
 
 Un diario quotidiano configurabile, installabile come app sul telefono e utilizzabile anche offline.
 
-Decidi tu cosa tenere d'occhio: abitudini, misure, faccende, umore. Ogni giorno Reminder ti mostra cosa c'è da fare e cosa hai già registrato. Accanto alle attività c'è un diario per pensieri, fatti e foto. Tutto resta sul tuo dispositivo, senza account.
+Decidi tu cosa tenere d'occhio: abitudini, misure, faccende, umore. Ogni giorno Reminder ti mostra cosa c'è da fare e cosa hai già registrato. Accanto alle attività c'è un diario per pensieri, fatti e foto. Tutto resta sul tuo dispositivo, senza account. Disponibile in italiano e in inglese.
 
-<p align="center"><img src="img/oggi.jpg" alt="Vista Oggi: attività del giorno, contatori, scala dell'umore e campo per una nota veloce" width="320"></p>
+**Provala:** https://elpiu.github.io/reminder/
+
+<table>
+  <tr>
+    <td align="center"><img src="img/oggi.jpg" alt="Vista Oggi con le attività del giorno, il contatore dell'acqua e la scala dell'umore" width="220"><br><sub>Oggi</sub></td>
+    <td align="center"><img src="img/diario.jpg" alt="Diario del giorno con una nota con foto e una nota con tag" width="220"><br><sub>Diario con foto e tag</sub></td>
+    <td align="center"><img src="img/calendario.jpg" alt="Calendario mensile con l'anello di completamento di ogni giorno" width="220"><br><sub>Calendario</sub></td>
+  </tr>
+  <tr>
+    <td align="center"><img src="img/andamento.jpg" alt="Andamento con completamento, serie e mappe per attività" width="220"><br><sub>Andamento</sub></td>
+    <td align="center"><img src="img/dettaglio-attivita.jpg" alt="Dettaglio dell'attività Sonno con serie, mappa annuale e grafico delle ore" width="220"><br><sub>Dettaglio di un'attività</sub></td>
+    <td align="center"><img src="img/editor-attivita.jpg" alt="Editor dell'attività con palette di colori e icone per categoria" width="220"><br><sub>Colori e icone</sub></td>
+  </tr>
+  <tr>
+    <td align="center"><img src="img/today-en.jpg" alt="Today view in English with the light theme" width="220"><br><sub>In inglese, tema chiaro</sub></td>
+    <td></td>
+    <td></td>
+  </tr>
+</table>
 
 ## Cosa puoi farci
 
@@ -33,6 +51,7 @@ Decidi tu cosa tenere d'occhio: abitudini, misure, faccende, umore. Ogni giorno 
 - **Annulla** al posto di "Sei sicuro?" per le eliminazioni.
 - **Badge** sull'icona dell'app con il numero di cose ancora da fare oggi, e una notifica opzionale all'apertura.
 - **Backup** JSON (con o senza foto), importazione e reset. L'app importa anche i backup della versione precedente.
+- **Italiano e inglese**: al primo avvio segue la lingua del browser, poi si cambia dalle impostazioni o dal benvenuto.
 - Tema chiaro, scuro o automatico; dimensione del testo regolabile; accessibile da tastiera e da screen reader.
 
 > **Perché niente notifiche a orario?** Senza un server, il browser non permette di programmare notifiche affidabili ad app chiusa. Reminder usa il badge sull'icona e una notifica quando apri l'app.
@@ -82,7 +101,7 @@ MSYS_NO_PATHCONV=1 NUXT_APP_BASE_URL=/reminder/ pnpm build
 
 ## Stack
 
-Nuxt 4 in modalità SPA · Vue 3.5 · TypeScript · Nuxt UI v4 · Tailwind CSS v4 · Dexie (IndexedDB) · @vite-pwa/nuxt · icone Lucide e font Inter/Literata inclusi nel bundle · Vitest · ESLint.
+Nuxt 4 in modalità SPA · Vue 3.5 · TypeScript · Nuxt UI v4 · Tailwind CSS v4 · @nuxtjs/i18n · Dexie (IndexedDB) · @vite-pwa/nuxt · icone Lucide e font Inter/Literata inclusi nel bundle · Vitest · ESLint.
 
 Dettagli e regole in [docs/tecnico.md](docs/tecnico.md); prodotto e funzionalità in [docs/prodotto.md](docs/prodotto.md).
 

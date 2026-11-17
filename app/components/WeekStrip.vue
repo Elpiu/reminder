@@ -9,11 +9,11 @@ const props = defineProps<{
 const emit = defineEmits<{ select: [DateKey] }>()
 
 const today = todayKey()
-const dayFmt = new Intl.DateTimeFormat('it-IT', { weekday: 'narrow' })
+const fmt = useFmt()
 const days = computed(() => Array.from({ length: 7 }, (_, i) => {
   const key = addDays(props.weekFrom, i)
   const d = fromDateKey(key)
-  return { key, num: d.getDate(), wd: dayFmt.format(d), info: props.progress[key] }
+  return { key, num: d.getDate(), wd: fmt.weekdayNarrow(key), info: props.progress[key] }
 }))
 
 // swipe orizzontale = settimana precedente/successiva
@@ -35,13 +35,13 @@ const C = 2 * Math.PI * R
 
 <template>
   <div class="flex items-center gap-1 px-2 pb-2" @touchstart.passive="onTouchStart" @touchend.passive="onTouchEnd">
-    <UButton icon="i-lucide-chevron-left" color="neutral" variant="ghost" size="sm" aria-label="Settimana precedente" @click="emit('select', addDays(date, -7))" />
+    <UButton icon="i-lucide-chevron-left" color="neutral" variant="ghost" size="sm" :aria-label="$t('day.prevWeek')" @click="emit('select', addDays(date, -7))" />
     <ol class="grid flex-1 grid-cols-7">
       <li v-for="d in days" :key="d.key" class="flex justify-center">
         <button
           type="button"
           class="group flex w-11 flex-col items-center gap-0.5 rounded-xl py-1 focus-visible:outline-2 focus-visible:outline-primary"
-          :aria-label="formatLongDate(d.key)"
+          :aria-label="fmt.longDate(d.key)"
           :aria-current="d.key === date ? 'date' : undefined"
           @click="emit('select', d.key)"
         >
@@ -71,6 +71,6 @@ const C = 2 * Math.PI * R
         </button>
       </li>
     </ol>
-    <UButton icon="i-lucide-chevron-right" color="neutral" variant="ghost" size="sm" aria-label="Settimana successiva" @click="emit('select', addDays(date, 7))" />
+    <UButton icon="i-lucide-chevron-right" color="neutral" variant="ghost" size="sm" :aria-label="$t('day.nextWeek')" @click="emit('select', addDays(date, 7))" />
   </div>
 </template>

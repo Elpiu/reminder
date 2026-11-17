@@ -1,18 +1,19 @@
 <script setup lang="ts">
 const route = useRoute()
+const { t } = useI18n()
 const { data: inbox } = useInbox()
 
 const items = computed(() => [
-  { to: '/', label: 'Oggi', icon: 'i-lucide-sun', active: route.path === '/' },
-  { to: '/calendario', label: 'Calendario', icon: 'i-lucide-calendar-days', active: route.path.startsWith('/calendario') },
-  { to: '/andamento', label: 'Andamento', icon: 'i-lucide-chart-no-axes-column', active: route.path.startsWith('/andamento') },
-  { to: '/inbox', label: 'Inbox', icon: 'i-lucide-inbox', active: route.path.startsWith('/inbox'), count: inbox.value.length },
+  { to: '/', label: t('nav.today'), icon: 'i-lucide-sun', active: route.path === '/' },
+  { to: '/calendario', label: t('nav.calendar'), icon: 'i-lucide-calendar-days', active: route.path.startsWith('/calendario') },
+  { to: '/andamento', label: t('nav.progress'), icon: 'i-lucide-chart-no-axes-column', active: route.path.startsWith('/andamento') },
+  { to: '/inbox', label: t('nav.inbox'), icon: 'i-lucide-inbox', active: route.path.startsWith('/inbox'), count: inbox.value.length },
 ])
 </script>
 
 <template>
   <nav
-    aria-label="Navigazione principale"
+    :aria-label="$t('nav.aria')"
     class="fixed inset-x-0 bottom-0 z-40 border-t border-default/60 bg-default/90 backdrop-blur safe-bottom"
   >
     <ul class="mx-auto grid h-(--nav-h) max-w-2xl grid-cols-4">

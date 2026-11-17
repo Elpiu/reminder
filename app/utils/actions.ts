@@ -3,6 +3,9 @@ import type { ActivityPreset as Preset } from '#shared/utils/catalog'
 
 const stamp = () => new Date().toISOString()
 
+/** Traduzione per i messaggi dei toast (le azioni girano fuori dai componenti). */
+const tr = (key: string, params: Record<string, unknown> = {}) => useNuxtApp().$i18n.t(key, params)
+
 /** Copia profonda di dati JSON, sicura anche con oggetti reattivi di Vue (che structuredClone rifiuta). */
 const plain = <T>(value: T): T => JSON.parse(JSON.stringify(value)) as T
 
@@ -55,9 +58,9 @@ export async function addPresetActivities(presets: Preset[]): Promise<void> {
 export async function setArchived(activity: Activity, archived: boolean): Promise<void> {
   await updateActivity(activity.id, { archived })
   useToast().add({
-    title: archived ? `“${activity.name}” archiviata` : `“${activity.name}” ripristinata`,
+    title: archived ? tr('toast.archived', { name: activity.name }) : tr('toast.restored', { name: activity.name }),
     icon: archived ? 'i-lucide-archive' : 'i-lucide-archive-restore',
-    actions: [{ label: 'Annulla', color: 'neutral', variant: 'outline', onClick: () => { void updateActivity(activity.id, { archived: !archived }) } }],
+    actions: [{ label: tr('common.undo'), color: 'neutral', variant: 'outline', onClick: () => { void updateActivity(activity.id, { archived: !archived }) } }],
   })
 }
 
@@ -69,7 +72,7 @@ export async function deleteActivity(activity: Activity): Promise<void> {
     await db.activities.delete(activity.id)
     await db.entries.bulkDelete(entries.map(e => e.id))
   })
-  undoToast(`“${activity.name}” eliminata`, async () => {
+  undoToast(tr('toast.deleted', { name: activity.name }), async () => {
     await db.transaction('rw', db.activities, db.entries, async () => {
       await db.activities.put(activity)
       await db.entries.bulkPut(entries)
@@ -176,7 +179,7 @@ export async function deleteEntry(entry: Entry): Promise<void> {
     await db.entries.delete(entry.id)
     await db.photos.bulkDelete(entry.photoIds)
   })
-  undoToast(entry.activityId ? 'Registrazione eliminata' : 'Nota eliminata', async () => {
+  undoToast(entry.activityId ? tr('toast.entryDeleted') : tr('toast.noteDeleted'), async () => {
     await db.transaction('rw', db.entries, db.photos, async () => {
       await db.entries.put(entry)
       if (photos.length) await db.photos.bulkPut(photos)
@@ -221,11 +224,11 @@ export async function completeInboxItem(item: InboxItem, date: DateKey = todayKe
     }, 'inbox')
   })
   useToast().add({
-    title: 'Fatto! Aggiunto al diario',
+    title: tr('toast.inboxDone'),
     icon: 'i-lucide-circle-check',
     color: 'success',
     actions: [{
-      label: 'Annulla', color: 'neutral', variant: 'outline',
+      label: tr('common.undo'), color: 'neutral', variant: 'outline',
       onClick: () => {
         void db.transaction('rw', db.inbox, db.entries, async () => {
           if (created) await db.entries.delete(created.id)
@@ -238,7 +241,7 @@ export async function completeInboxItem(item: InboxItem, date: DateKey = todayKe
 
 export async function deleteInboxItem(item: InboxItem): Promise<void> {
   await useDb().inbox.delete(item.id)
-  undoToast('Elemento eliminato', async () => {
+  undoToast(tr('toast.inboxDeleted'), async () => {
     await useDb().inbox.put(item)
   })
 }
@@ -281,7 +284,7 @@ export function undoToast(title: string, restore: () => Promise<void>) {
     title,
     icon: 'i-lucide-trash-2',
     duration: 6000,
-    actions: [{ label: 'Annulla', color: 'neutral', variant: 'outline', onClick: () => { void restore() } }],
+    actions: [{ label: tr('common.undo'), color: 'neutral', variant: 'outline', onClick: () => { void restore() } }],
   })
 }
 

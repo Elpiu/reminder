@@ -23,3 +23,4 @@ Porta alla gestione di attività e tag e imposta tema, dimensione del testo e in
 | [app/pages/impostazioni/index.vue](../../../../../../app/pages/impostazioni/index.vue) | [app/utils/backupIO.ts](../../../../../../app/utils/backupIO.ts) | Esporta e importa | Chiamata di funzione |
 | [app/pages/impostazioni/index.vue](../../../../../../app/pages/impostazioni/index.vue) | [app/components/ConfirmModal.vue](../../../../../../app/components/ConfirmModal.vue) | Chiede conferma | useOverlay |
 | [app/pages/impostazioni/index.vue](../../../../../../app/pages/impostazioni/index.vue) | [app/components/InstallGuide.vue](../../../../../../app/components/InstallGuide.vue) | Mostra l'installazione | Componente Vue |
+| [app/pages/impostazioni/index.vue](../../../../../../app/pages/impostazioni/index.vue) | [app/components/LanguagePicker.vue](../../../../../../app/components/LanguagePicker.vue) | Cambia la lingua | Componente Vue |

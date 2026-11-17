@@ -13,6 +13,7 @@
   - `--ui-bg` vale `#fafaf9` nel tema chiaro e `#151311` nel tema scuro.
 - **Font locali** `@fontsource-variable/inter` (sans) e `literata` (serif, per titoli e testo del diario); `ui.fonts: false`.
 - **Icone Lucide** incluse nel bundle (`icon.provider: 'none'`, `fallbackToApi: false`). Le icone scelte a runtime (`ACTIVITY_ICONS`) sono elencate in `clientBundle.icons`.
+- **@nuxtjs/i18n**: italiano (predefinito) e inglese, file in `i18n/locales/`, strategia `no_prefix` (stesse URL per tutte le lingue). Al primo avvio segue la lingua del browser; la scelta è salvata nel cookie `reminder_lang`.
 - **Dexie** (IndexedDB), con database `reminder-v2`.
 - **@vite-pwa/nuxt**: aggiornamento automatico, precache di HTML, JS, CSS, font e icone, fallback di navigazione, prompt di installazione.
 - **Qualità**: `@nuxt/eslint`, `nuxt typecheck` (vue-tsc), Vitest.
@@ -26,13 +27,16 @@ shared/                 logica pura, importabile da app e test
   utils/recurrence.ts   ricorrenze, completamento, piano del giorno, statistiche e serie
   utils/backup.ts       validazione backup v2 e conversione v1
   utils/catalog.ts      icone, colori, tipi di valore, pacchetti iniziali
-  utils/format.ts       formattazione di valori e date in italiano
+  utils/format.ts       formattazione di valori e date (lingua come parametro)
+  utils/errors.ts       AppError: errori con codice traducibile
 app/
   utils/db.ts           schema Dexie
   utils/actions.ts      tutte le scritture (con "Annulla" dove serve)
   utils/photos.ts       compressione e URL delle foto
   utils/backupIO.ts     export/import/reset e migrazione automatica dalla v1
-  composables/          useLiveQuery, useData (query reattive), usePreferences, useBadgeSync
+  composables/          useLiveQuery, useData (query reattive), usePreferences, useBadgeSync,
+                        useFmt (testi e formati nella lingua corrente), usePresets (pacchetti tradotti)
+i18n/locales/           it.json, en.json
   components/           UI (righe attività, sheet, editor, grafici)
   pages/                Oggi, calendario, andamento, inbox, cerca, impostazioni, benvenuto
   middleware/           onboarding e migrazione al primo avvio
@@ -44,6 +48,8 @@ tests/                  Vitest sulla logica in shared/
 - **Componenti**: non scrivono direttamente su Dexie; usano le funzioni di `app/utils/actions.ts`.
 - **Letture**: passano da `useLiveQuery`, così la UI si aggiorna da sola quando cambiano i dati.
 - **Logica**: la logica di dominio (ricorrenze, statistiche, backup) resta in `shared/`, pura e coperta da test.
+- **Testi**: nessun testo visibile scritto nel codice. Nei template si usa `$t('chiave')`; negli script `useFmt()` (che espone anche `t`) per date, valori, ricorrenze, tipi e colori. `shared/` non contiene testi: restituisce codici (es. `streakUnit: 'days'`, `AppError('backup.invalidFile')`) che l'app traduce. Ogni chiave va aggiunta sia in `it.json` sia in `en.json`.
+- **Pacchetti iniziali**: in `PRESET_PACKS` ogni attività ha una `key`; nome, unità e scelte arrivano da `presets.activities.<key>` al momento della creazione, quindi vengono salvati nella lingua dell'utente.
 - **Date**: sono chiavi locali `YYYY-MM-DD`. I timestamp tecnici sono ISO.
 - **Concorrenza**: letture e scritture concorrenti (es. tap rapidi sul contatore) stanno nella stessa transazione Dexie.
 - **Copie di dati**: si fanno con `plain()` (copia JSON). `structuredClone` fallisce sugli oggetti reattivi di Vue.

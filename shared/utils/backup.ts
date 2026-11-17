@@ -4,6 +4,7 @@ import type {
 } from '../types/models'
 import { isDateKey, nowTime, toDateKey } from './dates'
 import { isActivityColor } from './catalog'
+import { AppError } from './errors'
 
 export const BACKUP_VERSION = 2
 
@@ -15,14 +16,14 @@ const num = (v: unknown, fallback: number) => (typeof v === 'number' && Number.i
 const strArr = (v: unknown) => (Array.isArray(v) ? v.filter((x): x is string => typeof x === 'string') : [])
 const arr = (v: unknown, name: string): unknown[] => {
   if (v === undefined) return []
-  if (!Array.isArray(v)) throw new Error(`Il backup contiene un elenco "${name}" non valido.`)
+  if (!Array.isArray(v)) throw new AppError('backup.invalidList', { kind: name })
   return v
 }
 const iso = (v: unknown) => (typeof v === 'string' && !Number.isNaN(Date.parse(v)) ? v : new Date().toISOString())
 const time = (v: unknown, fallbackIso?: string) =>
   typeof v === 'string' && /^\d{2}:\d{2}$/.test(v) ? v : nowTime(fallbackIso ? new Date(fallbackIso) : new Date())
 const reqId = (r: Rec, what: string) => {
-  if (typeof r.id !== 'string' || !r.id) throw new Error(`Un elemento "${what}" nel backup non ha un id valido.`)
+  if (typeof r.id !== 'string' || !r.id) throw new AppError('backup.invalidItem', { kind: what })
   return r.id
 }
 
@@ -35,18 +36,18 @@ export function createBackup(data: BackupData): BackupV2 {
 
 /** Valida un backup v2 o converte un backup v1 (app Angular). Lancia un errore leggibile se non valido. */
 export function parseBackup(input: unknown): BackupData {
-  if (!isRec(input)) throw new Error('Il file non contiene un backup valido.')
+  if (!isRec(input)) throw new AppError('backup.invalidFile')
   if (input.version === 1) return convertV1(input.database)
-  if (input.version !== BACKUP_VERSION) throw new Error('Versione del backup non supportata.')
+  if (input.version !== BACKUP_VERSION) throw new AppError('backup.unsupportedVersion')
   const data = input.data
-  if (!isRec(data)) throw new Error('Il backup non contiene dati validi.')
+  if (!isRec(data)) throw new AppError('backup.invalidData')
   return {
-    activities: arr(data.activities, 'attività').map(normalizeActivity),
-    entries: arr(data.entries, 'voci').map(normalizeEntry),
+    activities: arr(data.activities, 'activities').map(normalizeActivity),
+    entries: arr(data.entries, 'entries').map(normalizeEntry),
     inbox: arr(data.inbox, 'inbox').map(normalizeInbox),
-    tags: arr(data.tags, 'tag').map(normalizeTag),
+    tags: arr(data.tags, 'tags').map(normalizeTag),
     preferences: isRec(data.preferences) ? normalizePreferences(data.preferences) : {},
-    photos: arr(data.photos, 'foto').map(normalizePhoto),
+    photos: arr(data.photos, 'photos').map(normalizePhoto),
   }
 }
 
@@ -71,11 +72,11 @@ function normalizeGoal(v: unknown): Goal | null {
 }
 
 export function normalizeActivity(input: unknown): Activity {
-  if (!isRec(input)) throw new Error('Un\'attività nel backup non è valida.')
+  if (!isRec(input)) throw new AppError('backup.invalidItem', { kind: 'activities' })
   const createdAt = iso(input.createdAt)
   const kind = KINDS.includes(input.kind as ValueKind) ? (input.kind as ValueKind) : 'check'
   return {
-    id: reqId(input, 'attività'),
+    id: reqId(input, 'activities'),
     name: str(input.name, 'Attività'),
     icon: str(input.icon, 'i-lucide-circle-check'),
     color: isActivityColor(input.color) ? input.color : 'teal',
@@ -102,12 +103,12 @@ function normalizeValue(v: unknown): EntryValue {
 }
 
 export function normalizeEntry(input: unknown): Entry {
-  if (!isRec(input)) throw new Error('Una voce nel backup non è valida.')
-  if (!isDateKey(input.date)) throw new Error('Una voce nel backup ha una data non valida.')
+  if (!isRec(input)) throw new AppError('backup.invalidItem', { kind: 'entries' })
+  if (!isDateKey(input.date)) throw new AppError('backup.invalidDate')
   const createdAt = iso(input.createdAt)
   const source = input.source === 'inbox' || input.source === 'import' ? input.source : 'manual'
   return {
-    id: reqId(input, 'voce'),
+    id: reqId(input, 'entries'),
     date: input.date,
     time: time(input.time, createdAt),
     activityId: typeof input.activityId === 'string' ? input.activityId : null,
@@ -122,7 +123,7 @@ export function normalizeEntry(input: unknown): Entry {
 }
 
 export function normalizeInbox(input: unknown): InboxItem {
-  if (!isRec(input)) throw new Error('Un elemento dell\'inbox nel backup non è valido.')
+  if (!isRec(input)) throw new AppError('backup.invalidItem', { kind: 'inbox' })
   const createdAt = iso(input.createdAt)
   return {
     id: reqId(input, 'inbox'),
@@ -137,8 +138,8 @@ export function normalizeInbox(input: unknown): InboxItem {
 }
 
 export function normalizeTag(input: unknown): Tag {
-  if (!isRec(input)) throw new Error('Un tag nel backup non è valido.')
-  return { id: reqId(input, 'tag'), name: str(input.name, 'tag').trim() || 'tag', createdAt: iso(input.createdAt) }
+  if (!isRec(input)) throw new AppError('backup.invalidItem', { kind: 'tags' })
+  return { id: reqId(input, 'tags'), name: str(input.name, 'tag').trim() || 'tag', createdAt: iso(input.createdAt) }
 }
 
 function normalizePreferences(p: Rec): Partial<Preferences> {
@@ -153,12 +154,12 @@ function normalizePreferences(p: Rec): Partial<Preferences> {
 }
 
 function normalizePhoto(input: unknown): BackupPhoto {
-  if (!isRec(input)) throw new Error('Una foto nel backup non è valida.')
+  if (!isRec(input)) throw new AppError('backup.invalidItem', { kind: 'photos' })
   const data = str(input.data)
-  if (!data.startsWith('data:image/')) throw new Error('Una foto nel backup non è un\'immagine valida.')
+  if (!data.startsWith('data:image/')) throw new AppError('backup.invalidImage')
   const thumb = str(input.thumb)
   return {
-    id: reqId(input, 'foto'),
+    id: reqId(input, 'photos'),
     type: str(input.type, 'image/jpeg'),
     width: num(input.width, 0),
     height: num(input.height, 0),
@@ -173,7 +174,7 @@ function normalizePhoto(input: unknown): BackupPhoto {
  * note → voci del diario, template → attività "Fatto/Non fatto" senza ricorrenza, todo → inbox, categorie → tag.
  */
 export function convertV1(database: unknown): BackupData {
-  if (!isRec(database)) throw new Error('Il backup v1 non contiene dati validi.')
+  if (!isRec(database)) throw new AppError('backup.invalidData')
   const now = new Date().toISOString()
   const tags: Tag[] = []
   const tagByName = new Map<string, string>()
@@ -192,8 +193,8 @@ export function convertV1(database: unknown): BackupData {
     remap.set(oldId, id)
   }
 
-  for (const t of arr(database.tags, 'tag')) if (isRec(t) && typeof t.id === 'string') addTag(t.id, str(t.name), t.createdAt)
-  for (const c of arr(database.categories, 'categorie')) if (isRec(c) && typeof c.id === 'string') addTag(c.id, str(c.name), c.createdAt)
+  for (const t of arr(database.tags, 'tags')) if (isRec(t) && typeof t.id === 'string') addTag(t.id, str(t.name), t.createdAt)
+  for (const c of arr(database.categories, 'tags')) if (isRec(c) && typeof c.id === 'string') addTag(c.id, str(c.name), c.createdAt)
 
   const tagsOf = (r: Rec) => {
     const ids = [...strArr(r.tagIds), ...(typeof r.categoryId === 'string' ? [r.categoryId] : [])]
@@ -201,7 +202,7 @@ export function convertV1(database: unknown): BackupData {
   }
   const joinText = (r: Rec) => [str(r.title).trim(), str(r.description).trim()].filter(Boolean).join('\n\n')
 
-  const entries: Entry[] = arr(database.notes, 'note').flatMap((n) => {
+  const entries: Entry[] = arr(database.notes, 'entries').flatMap((n) => {
     if (!isRec(n) || typeof n.id !== 'string' || !isDateKey(n.date)) return []
     const createdAt = iso(n.createdAt)
     return [{
@@ -219,7 +220,7 @@ export function convertV1(database: unknown): BackupData {
     }]
   })
 
-  const activities: Activity[] = arr(database.templates, 'template').flatMap((t, i) => {
+  const activities: Activity[] = arr(database.templates, 'activities').flatMap((t, i) => {
     if (!isRec(t) || typeof t.id !== 'string') return []
     const createdAt = iso(t.createdAt)
     return [{
@@ -244,7 +245,7 @@ export function convertV1(database: unknown): BackupData {
     }]
   })
 
-  const inbox: InboxItem[] = arr(database.todos, 'todo').flatMap((t, i) => {
+  const inbox: InboxItem[] = arr(database.todos, 'inbox').flatMap((t, i) => {
     if (!isRec(t) || typeof t.id !== 'string') return []
     const createdAt = iso(t.createdAt)
     return [{

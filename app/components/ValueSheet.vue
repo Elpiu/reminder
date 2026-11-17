@@ -19,6 +19,7 @@ const checked = ref(initial === true)
 const pickValue = ref<string | number | null>(typeof initial === 'string' || typeof initial === 'number' ? initial : null)
 const comment = ref(props.entry?.text ?? '')
 const saving = ref(false)
+const fmt = useFmt()
 
 const durationPresets = (a.goal?.target ?? 0) >= 240
   ? [360, 390, 420, 450, 480, 540]
@@ -68,14 +69,14 @@ function setPreset(m: number) {
 <template>
   <UDrawer
     :title="a.name"
-    :description="`${formatDayTitle(date)}${a.kind === 'number' && a.unit ? ` · in ${a.unit}` : ''}`"
+    :description="`${fmt.dayTitle(date)}${a.kind === 'number' && a.unit ? ` · ${$t('sheet.inUnit', { unit: a.unit })}` : ''}`"
     :ui="{ container: 'max-w-xl mx-auto w-full', body: 'space-y-5' }"
   >
     <template #body>
       <form id="value-form" class="space-y-5" @submit.prevent="save">
-        <USwitch v-if="a.kind === 'check'" v-model="checked" label="Fatto" size="xl" />
+        <USwitch v-if="a.kind === 'check'" v-model="checked" :label="$t('common.done')" size="xl" />
 
-        <UFormField v-else-if="a.kind === 'counter' || a.kind === 'number'" :label="a.kind === 'counter' ? 'Quanti' : 'Valore'" :hint="a.unit">
+        <UFormField v-else-if="a.kind === 'counter' || a.kind === 'number'" :label="a.kind === 'counter' ? $t('sheet.howMany') : $t('sheet.value')" :hint="a.unit">
           <UInputNumber
             v-model="num"
             :min="a.kind === 'counter' ? 0 : undefined"
@@ -90,10 +91,10 @@ function setPreset(m: number) {
 
         <div v-else-if="a.kind === 'duration'" class="space-y-3">
           <div class="grid grid-cols-2 gap-3">
-            <UFormField label="Ore">
+            <UFormField :label="$t('sheet.hours')">
               <UInputNumber v-model="hours" :min="0" :max="24" size="xl" class="w-full" />
             </UFormField>
-            <UFormField label="Minuti">
+            <UFormField :label="$t('sheet.minutes')">
               <UInputNumber v-model="minutes" :min="0" :max="59" :step="5" :step-snapping="false" size="xl" class="w-full" />
             </UFormField>
           </div>
@@ -128,8 +129,8 @@ function setPreset(m: number) {
           <UTextarea v-model="str" autoresize :rows="4" :maxrows="12" class="w-full" autofocus :ui="{ base: 'font-serif' }" />
         </UFormField>
 
-        <UFormField v-if="a.kind !== 'text'" label="Nota" hint="facoltativa">
-          <UTextarea v-model="comment" autoresize :rows="2" :maxrows="6" class="w-full" placeholder="Com'è andata?" />
+        <UFormField v-if="a.kind !== 'text'" :label="$t('sheet.note')" :hint="$t('common.optional')">
+          <UTextarea v-model="comment" autoresize :rows="2" :maxrows="6" class="w-full" :placeholder="$t('sheet.notePlaceholder')" />
         </UFormField>
       </form>
     </template>
@@ -138,7 +139,7 @@ function setPreset(m: number) {
       <div class="flex gap-2">
         <UButton
           v-if="entry"
-          label="Cancella"
+          :label="$t('sheet.clear')"
           icon="i-lucide-trash-2"
           color="error"
           variant="ghost"
@@ -147,7 +148,7 @@ function setPreset(m: number) {
         <UButton
           type="submit"
           form="value-form"
-          label="Salva"
+          :label="$t('common.save')"
           icon="i-lucide-check"
           size="lg"
           block

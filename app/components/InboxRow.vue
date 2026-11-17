@@ -10,16 +10,17 @@ const props = defineProps<{
 
 const editor = useOverlay().create(LazyInboxEditor)
 const today = todayKey()
+const fmt = useFmt()
 const overdue = computed(() => !!props.item.dueDate && props.item.dueDate < today)
 
 const menu = computed(() => [
   [
-    { label: 'Modifica', icon: 'i-lucide-pencil', onSelect: () => editor.open({ item: props.item }) },
-    { label: 'Per oggi', icon: 'i-lucide-sun', onSelect: () => updateInboxItem(props.item.id, { dueDate: today }) },
-    { label: 'Per domani', icon: 'i-lucide-sunrise', onSelect: () => updateInboxItem(props.item.id, { dueDate: addDays(today, 1) }) },
-    ...(props.item.dueDate ? [{ label: 'Togli la data', icon: 'i-lucide-calendar-x', onSelect: () => updateInboxItem(props.item.id, { dueDate: null }) }] : []),
+    { label: fmt.t('common.edit'), icon: 'i-lucide-pencil', onSelect: () => editor.open({ item: props.item }) },
+    { label: fmt.t('inbox.forToday'), icon: 'i-lucide-sun', onSelect: () => updateInboxItem(props.item.id, { dueDate: today }) },
+    { label: fmt.t('inbox.forTomorrow'), icon: 'i-lucide-sunrise', onSelect: () => updateInboxItem(props.item.id, { dueDate: addDays(today, 1) }) },
+    ...(props.item.dueDate ? [{ label: fmt.t('inbox.removeDate'), icon: 'i-lucide-calendar-x', onSelect: () => updateInboxItem(props.item.id, { dueDate: null }) }] : []),
   ],
-  [{ label: 'Elimina', icon: 'i-lucide-trash-2', color: 'error' as const, onSelect: () => deleteInboxItem(props.item) }],
+  [{ label: fmt.t('common.delete'), icon: 'i-lucide-trash-2', color: 'error' as const, onSelect: () => deleteInboxItem(props.item) }],
 ])
 
 // swipe: destra = fatto, sinistra = elimina
@@ -55,8 +56,8 @@ function end() {
 <template>
   <li class="relative overflow-hidden rounded-xl">
     <div class="absolute inset-0 flex items-center justify-between px-4 text-sm font-medium" aria-hidden="true">
-      <span class="flex items-center gap-1 text-success" :class="dx > 30 ? 'opacity-100' : 'opacity-0'"><UIcon name="i-lucide-check" class="size-5" /> Fatto</span>
-      <span class="flex items-center gap-1 text-error" :class="dx < -30 ? 'opacity-100' : 'opacity-0'">Elimina <UIcon name="i-lucide-trash-2" class="size-5" /></span>
+      <span class="flex items-center gap-1 text-success" :class="dx > 30 ? 'opacity-100' : 'opacity-0'"><UIcon name="i-lucide-check" class="size-5" /> {{ $t('common.done') }}</span>
+      <span class="flex items-center gap-1 text-error" :class="dx < -30 ? 'opacity-100' : 'opacity-0'">{{ $t('common.delete') }} <UIcon name="i-lucide-trash-2" class="size-5" /></span>
     </div>
     <div
       class="relative flex items-center gap-3 rounded-xl border border-default bg-default p-3"
@@ -75,7 +76,7 @@ function end() {
         size="lg"
         square
         class="relative -m-1 hover:text-primary"
-        :aria-label="`Completa ${item.title}`"
+        :aria-label="$t('inbox.complete', { title: item.title })"
         @click="completeInboxItem(item, completeOn)"
       />
       <button type="button" class="relative min-w-0 flex-1 rounded-md text-left focus-visible:outline-2 focus-visible:outline-primary" @click="editor.open({ item })">
@@ -83,12 +84,12 @@ function end() {
         <span v-if="item.notes" class="block truncate text-xs text-muted">{{ item.notes }}</span>
         <span v-if="item.dueDate" class="mt-0.5 inline-flex items-center gap-1 text-xs" :class="overdue ? 'text-error' : 'text-muted'">
           <UIcon name="i-lucide-calendar" class="size-3" />
-          {{ overdue ? 'In ritardo · ' : '' }}{{ formatDayTitle(item.dueDate) }}
+          {{ overdue ? `${$t('inbox.overdue')} · ` : '' }}{{ fmt.dayTitle(item.dueDate) }}
         </span>
         <TagChips :ids="item.tagIds" class="mt-1" />
       </button>
       <UDropdownMenu :items="menu" :content="{ align: 'end' }">
-        <UButton icon="i-lucide-ellipsis-vertical" color="neutral" variant="ghost" size="sm" class="relative" aria-label="Azioni" />
+        <UButton icon="i-lucide-ellipsis-vertical" color="neutral" variant="ghost" size="sm" class="relative" :aria-label="$t('inbox.actionsAria')" />
       </UDropdownMenu>
     </div>
   </li>

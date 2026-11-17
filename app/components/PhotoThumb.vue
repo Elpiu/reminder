@@ -1,5 +1,5 @@
 <script setup lang="ts">
-const props = withDefaults(defineProps<{ id: string, kind?: 'thumb' | 'full', alt?: string }>(), { kind: 'thumb', alt: 'Foto' })
+const props = withDefaults(defineProps<{ id: string, kind?: 'thumb' | 'full', alt?: string }>(), { kind: 'thumb', alt: '' })
 const src = ref<string | null>(null)
 watch(() => props.id, async (id) => {
   src.value = await photoUrl(id, props.kind)

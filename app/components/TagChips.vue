@@ -5,7 +5,7 @@ const names = computed(() => props.ids.map(id => byId.value.get(id)?.name).filte
 </script>
 
 <template>
-  <ul v-if="names.length" class="flex flex-wrap gap-1" aria-label="Tag">
+  <ul v-if="names.length" class="flex flex-wrap gap-1" :aria-label="$t('tags.aria')">
     <li v-for="n in names" :key="n">
       <NuxtLink
         :to="{ path: '/cerca', query: { tag: ids[names.indexOf(n)] } }"

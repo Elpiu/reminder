@@ -6,8 +6,8 @@ export default defineNuxtRouteMiddleware(async (to) => {
   // stesso dispositivo della vecchia app: porta i dati con sé, senza chiedere nulla
   if (await migrateFromV1IfPresent()) {
     useToast().add({
-      title: 'Dati della versione precedente importati',
-      description: 'Note, todo e ricorrenti sono ora voci, inbox e attività.',
+      title: useNuxtApp().$i18n.t('toast.migrated'),
+      description: useNuxtApp().$i18n.t('toast.migratedDescription'),
       icon: 'i-lucide-sparkles',
       color: 'success',
       duration: 8000,

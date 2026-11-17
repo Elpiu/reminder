@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { Activity, Recurrence, ValueKind } from '#shared/types/models'
+import type { Activity, Recurrence } from '#shared/types/models'
 
 const props = defineProps<{ activity?: Activity }>()
 const emit = defineEmits<{ close: [boolean] }>()
@@ -16,7 +16,9 @@ const draft = reactive<ActivityDraft>(props.activity
 const saving = ref(false)
 const showIcons = ref(false)
 
-const kinds = (Object.keys(KIND_INFO) as ValueKind[]).map(k => ({ value: k, ...KIND_INFO[k] }))
+const fmt = useFmt()
+const { t } = fmt
+const kinds = computed(() => VALUE_KINDS.map(k => ({ value: k, icon: KIND_ICONS[k], label: fmt.kindLabel(k), hint: fmt.kindHint(k) })))
 const hasGoal = computed(() => ['counter', 'number', 'duration'].includes(draft.kind))
 
 // ricorrenza
@@ -26,16 +28,16 @@ const every = ref(draft.recurrence.type === 'interval' ? draft.recurrence.every 
 const times = ref(draft.recurrence.type === 'weekly' ? draft.recurrence.times : 3)
 const monthDay = ref(draft.recurrence.type === 'monthly' ? draft.recurrence.day : fromDateKey(todayKey()).getDate())
 
-const recTypes = [
-  { value: 'daily', label: 'Ogni giorno' },
-  { value: 'weekdays', label: 'Alcuni giorni della settimana' },
-  { value: 'weekly', label: 'Un certo numero di volte a settimana' },
-  { value: 'interval', label: 'Ogni N giorni' },
-  { value: 'monthly', label: 'Una volta al mese' },
-  { value: 'none', label: 'Quando capita (nessuna ricorrenza)' },
-]
-const weekdayNames = ['L', 'M', 'M', 'G', 'V', 'S', 'D']
-const weekdayFull = ['lunedì', 'martedì', 'mercoledì', 'giovedì', 'venerdì', 'sabato', 'domenica']
+const recTypes = computed(() => [
+  { value: 'daily', label: t('editor.recDaily') },
+  { value: 'weekdays', label: t('editor.recWeekdays') },
+  { value: 'weekly', label: t('editor.recWeekly') },
+  { value: 'interval', label: t('editor.recInterval') },
+  { value: 'monthly', label: t('editor.recMonthly') },
+  { value: 'none', label: t('editor.recNone') },
+])
+const weekdayNames = computed(() => [1, 2, 3, 4, 5, 6, 7].map(d => t(`weekdays.initial.${d}`)))
+const weekdayFull = computed(() => [1, 2, 3, 4, 5, 6, 7].map(d => t(`weekdays.full.${d}`)))
 
 const recurrence = computed<Recurrence>(() => {
   switch (recType.value) {
@@ -105,7 +107,7 @@ async function save() {
 
 <template>
   <UModal
-    :title="activity ? 'Modifica attività' : 'Nuova attività'"
+    :title="activity ? $t('editor.edit') : $t('editor.new')"
     :ui="{ content: 'sm:max-w-lg', body: 'space-y-6' }"
     scrollable
   >
@@ -116,7 +118,7 @@ async function save() {
           <button
             type="button"
             class="relative rounded-full focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
-            aria-label="Scegli icona e colore"
+            :aria-label="$t('editor.pickLook')"
             :aria-expanded="showIcons"
             @click="showIcons = !showIcons"
           >
@@ -125,8 +127,8 @@ async function save() {
               <UIcon :name="showIcons ? 'i-lucide-chevron-up' : 'i-lucide-palette'" class="size-3" />
             </span>
           </button>
-          <UFormField label="Nome" class="flex-1">
-            <UInput v-model="draft.name" size="lg" class="w-full" placeholder="Es. Bere acqua" autofocus />
+          <UFormField :label="$t('editor.name')" class="flex-1">
+            <UInput v-model="draft.name" size="lg" class="w-full" :placeholder="$t('editor.namePlaceholder')" autofocus />
           </UFormField>
         </div>
 
@@ -135,7 +137,7 @@ async function save() {
         <!-- tipo -->
         <fieldset>
           <legend class="mb-2 text-sm font-medium text-highlighted">
-            Cosa registri
+            {{ $t('editor.whatYouTrack') }}
           </legend>
           <div class="grid grid-cols-2 gap-2">
             <button
@@ -157,43 +159,43 @@ async function save() {
         </fieldset>
 
         <!-- opzioni del tipo -->
-        <UFormField v-if="draft.kind === 'number'" label="Unità" hint="facoltativa">
-          <UInput v-model="draft.unit" placeholder="km, €, kg, pagine…" class="w-full" />
+        <UFormField v-if="draft.kind === 'number'" :label="$t('editor.unit')" :hint="$t('common.optional')">
+          <UInput v-model="draft.unit" :placeholder="$t('editor.unitPlaceholder')" class="w-full" />
         </UFormField>
         <div v-if="draft.kind === 'counter'" class="grid grid-cols-2 gap-3">
-          <UFormField label="Cosa conti" hint="facoltativo">
-            <UInput v-model="draft.unit" placeholder="bicchieri" class="w-full" />
+          <UFormField :label="$t('editor.whatYouCount')" :hint="$t('common.optional')">
+            <UInput v-model="draft.unit" :placeholder="$t('editor.countPlaceholder')" class="w-full" />
           </UFormField>
-          <UFormField label="Incremento">
+          <UFormField :label="$t('editor.step')">
             <UInputNumber v-model="draft.step" :min="1" class="w-full" />
           </UFormField>
         </div>
-        <UFormField v-if="draft.kind === 'choice'" label="Opzioni" help="Una per riga.">
-          <UTextarea v-model="choicesText" :rows="4" autoresize class="w-full" placeholder="Corsa&#10;Palestra&#10;Bici" />
+        <UFormField v-if="draft.kind === 'choice'" :label="$t('editor.options')" :help="$t('editor.optionsHelp')">
+          <UTextarea v-model="choicesText" :rows="4" autoresize class="w-full" :placeholder="$t('editor.optionsPlaceholder')" />
         </UFormField>
-        <UFormField v-if="draft.kind === 'scale'" label="Livelli" help="Separati da spazio, dal più basso al più alto (emoji o numeri).">
+        <UFormField v-if="draft.kind === 'scale'" :label="$t('editor.levels')" :help="$t('editor.levelsHelp')">
           <UInput v-model="scaleText" class="w-full text-lg" />
         </UFormField>
 
         <!-- obiettivo -->
         <div v-if="hasGoal" class="space-y-3">
-          <USwitch v-model="goalOn" label="Obiettivo giornaliero" />
+          <USwitch v-model="goalOn" :label="$t('editor.goal')" />
           <div v-if="goalOn" class="flex flex-wrap items-end gap-3">
             <USelect
               v-model="goalOp"
-              :items="[{ label: 'Almeno', value: 'gte' }, { label: 'Al massimo', value: 'lte' }]"
+              :items="[{ label: $t('editor.atLeast'), value: 'gte' }, { label: $t('editor.atMost'), value: 'lte' }]"
               class="w-36"
-              aria-label="Tipo di obiettivo"
+              :aria-label="$t('editor.goalKind')"
             />
             <template v-if="draft.kind === 'duration'">
-              <UFormField label="Ore">
+              <UFormField :label="$t('editor.hours')">
                 <UInputNumber v-model="goalHours" :min="0" :max="24" class="w-28" />
               </UFormField>
-              <UFormField label="Min">
+              <UFormField :label="$t('editor.minutes')">
                 <UInputNumber v-model="goalMinutes" :min="0" :max="59" :step="5" :step-snapping="false" class="w-28" />
               </UFormField>
             </template>
-            <UFormField v-else :label="draft.unit || 'Valore'">
+            <UFormField v-else :label="draft.unit || $t('editor.value')">
               <UInputNumber v-model="goalTarget" :min="0" :step="draft.kind === 'counter' ? 1 : 0.5" :step-snapping="false" class="w-36" />
             </UFormField>
           </div>
@@ -201,10 +203,10 @@ async function save() {
 
         <!-- ricorrenza -->
         <div class="space-y-3">
-          <UFormField label="Quando">
+          <UFormField :label="$t('editor.when')">
             <USelect v-model="recType" :items="recTypes" class="w-full" />
           </UFormField>
-          <div v-if="recType === 'weekdays'" class="flex gap-1.5" role="group" aria-label="Giorni">
+          <div v-if="recType === 'weekdays'" class="flex gap-1.5" role="group" :aria-label="$t('editor.days')">
             <UButton
               v-for="(n, i) in weekdayNames"
               :key="i"
@@ -217,42 +219,42 @@ async function save() {
               @click="toggleDay(i + 1)"
             />
           </div>
-          <UFormField v-if="recType === 'weekly'" label="Volte a settimana">
+          <UFormField v-if="recType === 'weekly'" :label="$t('editor.timesPerWeek')">
             <UInputNumber v-model="times" :min="1" :max="7" class="w-36" />
           </UFormField>
-          <UFormField v-if="recType === 'interval'" label="Ogni quanti giorni" :help="`A partire da ${formatShortDate(draft.startDate)}`">
+          <UFormField v-if="recType === 'interval'" :label="$t('editor.everyDays')" :help="$t('editor.startingFrom', { date: fmt.shortDate(draft.startDate) })">
             <UInputNumber v-model="every" :min="1" :max="365" class="w-36" />
           </UFormField>
-          <UFormField v-if="recType === 'monthly'" label="Giorno del mese" help="Nei mesi più corti vale l'ultimo giorno.">
+          <UFormField v-if="recType === 'monthly'" :label="$t('editor.monthDay')" :help="$t('editor.monthDayHelp')">
             <UInputNumber v-model="monthDay" :min="1" :max="31" class="w-36" />
           </UFormField>
           <p class="text-xs text-muted">
-            {{ recType === 'none' ? 'Comparirà in “Registra anche”, senza contare come da fare.' : recurrenceLabel(recurrence) }}
+            {{ recType === 'none' ? $t('editor.noneHint') : fmt.recurrence(recurrence) }}
           </p>
         </div>
 
         <!-- orario -->
         <div class="flex flex-wrap items-center gap-3">
-          <USwitch v-model="timeOn" label="Orario indicativo" description="Ordina le attività nella giornata" />
-          <UInput v-if="timeOn" v-model="timeValue" type="time" class="w-32" aria-label="Orario" />
+          <USwitch v-model="timeOn" :label="$t('editor.time')" :description="$t('editor.timeDescription')" />
+          <UInput v-if="timeOn" v-model="timeValue" type="time" class="w-32" :aria-label="$t('editor.timeAria')" />
         </div>
 
-        <UFormField label="Inizio" help="Da questo giorno l'attività conta nelle statistiche.">
+        <UFormField :label="$t('editor.start')" :help="$t('editor.startHelp')">
           <UInput v-model="draft.startDate" type="date" class="w-44" />
         </UFormField>
 
-        <UFormField label="Tag" help="Vengono copiati sulle registrazioni.">
+        <UFormField :label="$t('editor.tags')" :help="$t('editor.tagsHelp')">
           <TagPicker v-model="draft.tagIds" />
         </UFormField>
       </form>
     </template>
     <template #footer>
       <div class="flex w-full gap-2">
-        <UButton label="Annulla" color="neutral" variant="ghost" @click="emit('close', false)" />
+        <UButton :label="$t('common.cancel')" color="neutral" variant="ghost" @click="emit('close', false)" />
         <UButton
           type="submit"
           form="activity-form"
-          :label="activity ? 'Salva' : 'Crea attività'"
+          :label="activity ? $t('common.save') : $t('editor.create')"
           icon="i-lucide-check"
           class="ml-auto"
           :disabled="!valid"

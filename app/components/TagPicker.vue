@@ -18,8 +18,8 @@ async function onCreate(name: string) {
     multiple
     create-item
     icon="i-lucide-tag"
-    placeholder="Aggiungi tag"
-    :search-input="{ placeholder: 'Cerca o crea un tag…' }"
+    :placeholder="$t('tags.pickerPlaceholder')"
+    :search-input="{ placeholder: $t('tags.pickerSearch') }"
     class="w-full"
     @create="onCreate"
   />

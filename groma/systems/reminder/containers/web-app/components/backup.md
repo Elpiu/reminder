@@ -27,3 +27,4 @@ La parte pura valida i backup `version: 2` e converte quelli `version: 1` della 
 | --- | --- | --- | --- |
 | [app/utils/backupIO.ts](../../../../../../app/utils/backupIO.ts) | [app/utils/db.ts](../../../../../../app/utils/db.ts) | Sostituisce i dati | Transazione Dexie |
 | [app/utils/backupIO.ts](../../../../../../app/utils/backupIO.ts) | [indexeddb-del-browser](../../../../../externals/indexeddb-del-browser.md) | Legge il database v1 | IndexedDB |
+| [shared/utils/backup.ts](../../../../../../shared/utils/backup.ts) | [shared/utils/errors.ts](../../../../../../shared/utils/errors.ts) | Segnala backup non validi | throw AppError |

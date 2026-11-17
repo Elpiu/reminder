@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import type { Entry } from '#shared/types/models'
 
-useHead({ title: 'Cerca' })
+const fmt = useFmt()
+const { t } = fmt
+useHead({ title: () => t('search.title') })
 
 const route = useRoute()
 const { data: activities } = useActivities()
@@ -18,11 +20,11 @@ const { data: all, ready } = useLiveQuery(() => useDb().entries.toArray(), [], [
 const actById = computed(() => new Map(activities.value.map(a => [a.id, a])))
 
 const activityItems = computed(() => [
-  { label: 'Tutto', value: undefined },
-  { label: 'Solo note', value: '__notes' },
+  { label: t('search.all'), value: undefined },
+  { label: t('search.onlyNotes'), value: '__notes' },
   ...activities.value.map(a => ({ label: a.name, value: a.id, icon: a.icon })),
 ])
-const tagItems = computed(() => [{ label: 'Tutti i tag', value: undefined }, ...tags.value.map(t => ({ label: `#${t.name}`, value: t.id }))])
+const tagItems = computed(() => [{ label: t('search.allTags'), value: undefined }, ...tags.value.map(t => ({ label: `#${t.name}`, value: t.id }))])
 
 const active = computed(() => !!(q.value.trim() || tagId.value || activityId.value || from.value || to.value))
 const filterCount = computed(() => [tagId.value, activityId.value, from.value, to.value].filter(Boolean).length)
@@ -68,7 +70,7 @@ function reset() {
 
 <template>
   <div>
-    <AppHeader title="Cerca" back="/">
+    <AppHeader :title="$t('search.title')" back="/">
       <template #actions>
         <span />
       </template>
@@ -78,8 +80,8 @@ function reset() {
         <UInput
           v-model="q"
           icon="i-lucide-search"
-          placeholder="Cerca nelle note e nelle attività"
-          aria-label="Testo da cercare"
+          :placeholder="$t('search.placeholder')"
+          :aria-label="$t('search.aria')"
           size="lg"
           class="flex-1"
           autofocus
@@ -91,7 +93,7 @@ function reset() {
             size="lg"
             :color="showFilters ? 'primary' : 'neutral'"
             variant="soft"
-            aria-label="Filtri"
+            :aria-label="$t('search.filters')"
             :aria-expanded="showFilters"
             @click="showFilters = !showFilters"
           />
@@ -99,29 +101,29 @@ function reset() {
       </div>
 
       <div v-if="showFilters" class="grid grid-cols-2 gap-3 rounded-xl border border-default bg-elevated/40 p-3">
-        <UFormField label="Cosa" class="col-span-2 sm:col-span-1">
+        <UFormField :label="$t('search.what')" class="col-span-2 sm:col-span-1">
           <USelect v-model="activityId" :items="activityItems" class="w-full" />
         </UFormField>
-        <UFormField label="Tag" class="col-span-2 sm:col-span-1">
+        <UFormField :label="$t('search.tag')" class="col-span-2 sm:col-span-1">
           <USelect v-model="tagId" :items="tagItems" class="w-full" />
         </UFormField>
-        <UFormField label="Dal">
+        <UFormField :label="$t('search.from')">
           <UInput v-model="from" type="date" class="w-full" />
         </UFormField>
-        <UFormField label="Al">
+        <UFormField :label="$t('search.to')">
           <UInput v-model="to" type="date" class="w-full" />
         </UFormField>
-        <UButton v-if="active" label="Azzera" icon="i-lucide-x" color="neutral" variant="ghost" size="sm" class="col-span-2 justify-self-start" @click="reset" />
+        <UButton v-if="active" :label="$t('search.reset')" icon="i-lucide-x" color="neutral" variant="ghost" size="sm" class="col-span-2 justify-self-start" @click="reset" />
       </div>
 
       <p v-if="active && ready" class="text-sm text-muted" aria-live="polite">
-        {{ results.length === 0 ? 'Nessun risultato' : results.length === 1 ? '1 risultato' : `${results.length} risultati` }}
+        {{ $t('search.results', results.length) }}
       </p>
 
-      <section v-for="g in groups" :key="g.date" :aria-label="formatLongDate(g.date)" class="space-y-2">
+      <section v-for="g in groups" :key="g.date" :aria-label="fmt.longDate(g.date)" class="space-y-2">
         <h2 class="sticky top-14 z-10 -mx-4 bg-default/90 px-4 py-1 text-sm font-semibold text-muted backdrop-blur">
           <NuxtLink :to="{ path: '/', query: { d: g.date } }" class="hover:text-primary">
-            {{ formatLongDate(g.date) }}
+            {{ fmt.longDate(g.date) }}
           </NuxtLink>
         </h2>
         <template v-for="e in g.items" :key="e.id">
@@ -136,7 +138,7 @@ function reset() {
               <span class="block truncate font-medium text-highlighted">{{ actById.get(e.activityId)!.name }}</span>
               <span v-if="e.text" class="block truncate text-xs text-muted">{{ e.text }}</span>
             </span>
-            <span class="text-sm text-muted">{{ formatValue(actById.get(e.activityId)!, e.value) }}</span>
+            <span class="text-sm text-muted">{{ fmt.value(actById.get(e.activityId)!, e.value) }}</span>
           </NuxtLink>
         </template>
       </section>
@@ -144,8 +146,8 @@ function reset() {
       <UEmpty
         v-if="!active"
         icon="i-lucide-search"
-        title="Ritrova qualsiasi cosa"
-        description="Cerca per parola, oppure filtra per attività, tag e periodo."
+        :title="$t('search.emptyTitle')"
+        :description="$t('search.emptyDescription')"
         variant="naked"
       />
     </main>

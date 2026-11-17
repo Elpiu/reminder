@@ -6,6 +6,7 @@ Un diario quotidiano generalista e configurabile. L'utente decide cosa tracciare
 
 ## Principi
 
+- **Italiano e inglese**: l'interfaccia segue la lingua del browser al primo avvio e si cambia dalle impostazioni. I contenuti dell'utente (nomi delle attività, note) restano come li ha scritti.
 - **Mobile first, offline first**: PWA installabile. Tutti i dati sono in IndexedDB sul dispositivo, senza account, backend o sync.
 - **Pochi concetti**: attività, voci, inbox, tag. Le categorie della v1 non esistono più.
 - **Nessun form lungo di default**: subito il campo principale, il resto dietro "Altro".

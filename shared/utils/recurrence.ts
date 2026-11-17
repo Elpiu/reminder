@@ -1,4 +1,4 @@
-import type { Activity, DateKey, Entry, Recurrence } from '../types/models'
+import type { Activity, DateKey, Entry } from '../types/models'
 import { addDays, daysInMonth, diffDays, fromDateKey, isoWeekday, startOfWeek } from './dates'
 
 type Schedulable = Pick<Activity, 'recurrence' | 'startDate'>
@@ -59,27 +59,6 @@ export function progressOf(activity: Completable, entry: Pick<Entry, 'value'> | 
   return isComplete(activity, entry) ? 1 : 0
 }
 
-export function recurrenceLabel(rec: Recurrence): string {
-  const names = ['', 'lun', 'mar', 'mer', 'gio', 'ven', 'sab', 'dom']
-  switch (rec.type) {
-    case 'none':
-      return 'Quando vuoi'
-    case 'daily':
-      return 'Ogni giorno'
-    case 'weekdays':
-      if (rec.days.length === 7) return 'Ogni giorno'
-      if (rec.days.length === 5 && [1, 2, 3, 4, 5].every(d => rec.days.includes(d))) return 'Giorni feriali'
-      if (rec.days.length === 2 && rec.days.includes(6) && rec.days.includes(7)) return 'Nel weekend'
-      return [...rec.days].sort().map(d => names[d]).join(', ')
-    case 'interval':
-      return rec.every === 1 ? 'Ogni giorno' : `Ogni ${rec.every} giorni`
-    case 'weekly':
-      return rec.times === 1 ? 'Una volta a settimana' : `${rec.times} volte a settimana`
-    case 'monthly':
-      return `Ogni mese, giorno ${rec.day}`
-  }
-}
-
 export type DayStatus = 'done' | 'pending' | 'weekDone'
 
 export interface DayItem<A extends Activity = Activity> {
@@ -137,8 +116,8 @@ export function planDay(
 export interface ActivityStats {
   currentStreak: number
   bestStreak: number
-  /** Unità della serie: giorni o settimane (per `weekly`). */
-  streakUnit: 'giorni' | 'settimane'
+  /** Unità della serie: giorni, o settimane per `weekly`. */
+  streakUnit: 'days' | 'weeks'
   /** Occasioni previste e completate nel periodo. */
   expected: number
   completed: number
@@ -178,7 +157,7 @@ export function activityStats(
     return {
       currentStreak: current,
       bestStreak: best,
-      streakUnit: 'settimane',
+      streakUnit: 'weeks',
       expected: inRange.length,
       completed: met,
       rate: inRange.length ? met / inRange.length : 0,
@@ -193,7 +172,7 @@ export function activityStats(
     let completed = 0
     for (const d of doneDays) if (d >= from && d <= to) completed++
     const span = Math.max(1, diffDays(from > start ? from : start, to) + 1)
-    return { currentStreak: current, bestStreak: best, streakUnit: 'giorni', expected: span, completed, rate: completed / span, doneDays }
+    return { currentStreak: current, bestStreak: best, streakUnit: 'days', expected: span, completed, rate: completed / span, doneDays }
   }
 
   const occasions: boolean[] = []
@@ -213,7 +192,7 @@ export function activityStats(
   return {
     currentStreak: current,
     bestStreak: best,
-    streakUnit: 'giorni',
+    streakUnit: 'days',
     expected,
     completed,
     rate: expected ? Math.min(1, completed / expected) : 0,

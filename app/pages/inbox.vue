@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { LazyInboxEditor } from '#components'
 
-useHead({ title: 'Inbox' })
+const { t } = useI18n()
+useHead({ title: () => t('inbox.title') })
 
 const { data: items, ready } = useInbox()
 const title = ref('')
@@ -20,30 +21,30 @@ async function add() {
 
 <template>
   <div>
-    <AppHeader title="Inbox" subtitle="Cose da fare, con o senza data" />
+    <AppHeader :title="$t('inbox.title')" :subtitle="$t('inbox.subtitle')" />
     <main class="space-y-6 px-4 pb-6 pt-4">
       <form class="flex gap-2" @submit.prevent="add">
         <UInput
           v-model="title"
-          placeholder="Aggiungi una cosa da fare…"
-          aria-label="Nuova cosa da fare"
+          :placeholder="$t('inbox.placeholder')"
+          :aria-label="$t('inbox.newAria')"
           size="lg"
           class="flex-1"
           icon="i-lucide-plus"
           enterkeyhint="done"
         />
-        <UButton v-if="title.trim()" type="submit" label="Aggiungi" size="lg" />
-        <UButton v-else icon="i-lucide-calendar-plus" size="lg" color="neutral" variant="soft" aria-label="Aggiungi con data e dettagli" @click="editor.open({})" />
+        <UButton v-if="title.trim()" type="submit" :label="$t('common.add')" size="lg" />
+        <UButton v-else icon="i-lucide-calendar-plus" size="lg" color="neutral" variant="soft" :aria-label="$t('inbox.addWithDetails')" @click="editor.open({})" />
       </form>
 
       <p v-if="items.length" class="flex items-center gap-2 text-xs text-muted">
         <UIcon name="i-lucide-hand" class="size-4" />
-        Scorri a destra per completare, a sinistra per eliminare.
+        {{ $t('inbox.swipeHint') }}
       </p>
 
       <section v-if="dated.length" aria-labelledby="dated-title">
         <h2 id="dated-title" class="mb-2 text-sm font-semibold uppercase tracking-wide text-muted">
-          In programma
+          {{ $t('inbox.scheduled') }}
         </h2>
         <ul class="space-y-2">
           <InboxRow v-for="item in dated" :key="item.id" :item="item" />
@@ -52,7 +53,7 @@ async function add() {
 
       <section v-if="undated.length" aria-labelledby="undated-title">
         <h2 id="undated-title" class="mb-2 text-sm font-semibold uppercase tracking-wide text-muted">
-          Senza data
+          {{ $t('inbox.undated') }}
         </h2>
         <ul class="space-y-2">
           <InboxRow v-for="item in undated" :key="item.id" :item="item" />
@@ -62,8 +63,8 @@ async function add() {
       <UEmpty
         v-if="ready && !items.length"
         icon="i-lucide-inbox"
-        title="Inbox vuota"
-        description="Scrivi qui le cose da fare che non hanno ancora un giorno. Quando le completi finiscono nel diario."
+        :title="$t('inbox.emptyTitle')"
+        :description="$t('inbox.emptyDescription')"
         variant="naked"
       />
     </main>

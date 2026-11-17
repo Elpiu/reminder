@@ -9,13 +9,14 @@ const notes = ref(props.item?.notes ?? '')
 const dueDate = ref<string>(props.item?.dueDate ?? props.initialDate ?? '')
 const tagIds = ref<string[]>([...(props.item?.tagIds ?? [])])
 const today = todayKey()
+const { t } = useI18n()
 
-const quick = [
-  { label: 'Nessuna', value: '' },
-  { label: 'Oggi', value: today },
-  { label: 'Domani', value: addDays(today, 1) },
-  { label: 'Tra una settimana', value: addDays(today, 7) },
-]
+const quick = computed(() => [
+  { label: t('inbox.noDate'), value: '' },
+  { label: t('common.today'), value: today },
+  { label: t('common.tomorrow'), value: addDays(today, 1) },
+  { label: t('inbox.inAWeek'), value: addDays(today, 7) },
+])
 
 async function save() {
   if (!title.value.trim()) return
@@ -27,16 +28,16 @@ async function save() {
 </script>
 
 <template>
-  <UDrawer :title="item ? 'Modifica' : 'Nuova cosa da fare'" :ui="{ container: 'max-w-xl mx-auto w-full' }">
+  <UDrawer :title="item ? $t('inbox.editorEdit') : $t('inbox.editorNew')" :ui="{ container: 'max-w-xl mx-auto w-full' }">
     <template #body>
       <form id="inbox-form" class="space-y-4" @submit.prevent="save">
-        <UFormField label="Cosa">
-          <UInput v-model="title" size="lg" class="w-full" autofocus placeholder="Es. chiamare l'idraulico" />
+        <UFormField :label="$t('inbox.what')">
+          <UInput v-model="title" size="lg" class="w-full" autofocus :placeholder="$t('inbox.whatPlaceholder')" />
         </UFormField>
-        <UFormField label="Dettagli" hint="facoltativi">
+        <UFormField :label="$t('inbox.details')" :hint="$t('common.optionalPlural')">
           <UTextarea v-model="notes" autoresize :rows="2" class="w-full" />
         </UFormField>
-        <UFormField label="Quando" help="Con una data compare anche nella vista di quel giorno.">
+        <UFormField :label="$t('inbox.when')" :help="$t('inbox.whenHelp')">
           <div class="flex flex-wrap gap-2">
             <UButton
               v-for="q in quick"
@@ -47,16 +48,16 @@ async function save() {
               :variant="dueDate === q.value ? 'solid' : 'soft'"
               @click="dueDate = q.value"
             />
-            <UInput v-model="dueDate" type="date" size="sm" aria-label="Scegli una data" class="w-40" />
+            <UInput v-model="dueDate" type="date" size="sm" :aria-label="$t('inbox.pickDate')" class="w-40" />
           </div>
         </UFormField>
-        <UFormField label="Tag">
+        <UFormField :label="$t('tags.aria')">
           <TagPicker v-model="tagIds" />
         </UFormField>
       </form>
     </template>
     <template #footer>
-      <UButton type="submit" form="inbox-form" label="Salva" icon="i-lucide-check" size="lg" block :disabled="!title.trim()" />
+      <UButton type="submit" form="inbox-form" :label="$t('common.save')" icon="i-lucide-check" size="lg" block :disabled="!title.trim()" />
     </template>
   </UDrawer>
 </template>

@@ -9,21 +9,21 @@ const installed = computed(() => standalone || !!pwa?.isPWAInstalled)
 <template>
   <div class="space-y-3 text-sm">
     <p v-if="installed" class="flex items-center gap-2 text-success">
-      <UIcon name="i-lucide-circle-check" class="size-5" /> L'app è installata su questo dispositivo.
+      <UIcon name="i-lucide-circle-check" class="size-5" /> {{ $t('install.installed') }}
     </p>
     <template v-else>
       <p class="text-muted">
-        Installata, Reminder si apre come un'app, funziona senza connessione e può mostrare il numero di cose da fare sull'icona.
+        {{ $t('install.why') }}
       </p>
-      <UButton v-if="pwa?.showInstallPrompt" label="Installa l'app" icon="i-lucide-download" @click="pwa.install()" />
+      <UButton v-if="pwa?.showInstallPrompt" :label="$t('install.button')" icon="i-lucide-download" @click="pwa.install()" />
       <ol v-else-if="isIOS" class="list-decimal space-y-1 pl-5">
-        <li>Apri questa pagina con <strong>Safari</strong>.</li>
-        <li>Tocca <UIcon name="i-lucide-share" class="size-4 align-[-3px]" /> <strong>Condividi</strong>.</li>
-        <li>Scegli <strong>Aggiungi alla schermata Home</strong>.</li>
+        <li>{{ $t('install.ios1') }}</li>
+        <li><UIcon name="i-lucide-share" class="size-4 align-[-3px]" /> {{ $t('install.ios2') }}</li>
+        <li>{{ $t('install.ios3') }}</li>
       </ol>
       <ol v-else class="list-decimal space-y-1 pl-5">
-        <li>Apri il menu del browser <UIcon name="i-lucide-ellipsis-vertical" class="size-4 align-[-3px]" />.</li>
-        <li>Scegli <strong>Installa app</strong> o <strong>Aggiungi a schermata Home</strong>.</li>
+        <li><UIcon name="i-lucide-ellipsis-vertical" class="size-4 align-[-3px]" /> {{ $t('install.android1') }}</li>
+        <li>{{ $t('install.android2') }}</li>
       </ol>
     </template>
   </div>

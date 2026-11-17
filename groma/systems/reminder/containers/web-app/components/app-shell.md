@@ -21,7 +21,7 @@ groma:
 description: Cornice comune a tutte le schermate
 ---
 
-Monta `UApp` con la lingua italiana e il sistema di toast e overlay, avvia la sincronizzazione del badge e sceglie il layout: `default` con la barra di navigazione in basso (Oggi, Calendario, Andamento, Inbox, con il contatore dell'inbox) oppure `bare` per il primo avvio. L'intestazione sticky di ogni pagina offre ricerca e impostazioni e rispetta le safe area di iOS.
+Monta `UApp` con la lingua scelta (anche per i componenti Nuxt UI), il sistema di toast e overlay e l'attributo `lang` della pagina, avvia la sincronizzazione del badge e sceglie il layout: `default` con la barra di navigazione in basso (Oggi, Calendario, Andamento, Inbox, con il contatore dell'inbox) oppure `bare` per il primo avvio. L'intestazione sticky di ogni pagina offre ricerca e impostazioni e rispetta le safe area di iOS.
 
 ## Relationships
 

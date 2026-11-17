@@ -4,6 +4,7 @@ const model = defineModel<string[]>({ required: true })
 const busy = ref(false)
 const input = useTemplateRef<HTMLInputElement>('input')
 const toast = useToast()
+const fmt = useFmt()
 
 async function onFiles(e: Event) {
   const files = Array.from((e.target as HTMLInputElement).files ?? [])
@@ -15,7 +16,7 @@ async function onFiles(e: Event) {
     model.value = [...model.value, ...ids]
   }
   catch (err) {
-    toast.add({ title: 'Foto non aggiunta', description: (err as Error).message, color: 'error', icon: 'i-lucide-image-off' })
+    toast.add({ title: fmt.t('photos.failed'), description: fmt.error(err), color: 'error', icon: 'i-lucide-image-off' })
   }
   finally {
     busy.value = false
@@ -49,7 +50,7 @@ function remove(id: string) {
           size="xs"
           color="neutral"
           variant="solid"
-          aria-label="Rimuovi foto"
+          :aria-label="$t('photos.remove')"
           @click="remove(p)"
         />
       </li>
@@ -61,7 +62,7 @@ function remove(id: string) {
           @click="input?.click()"
         >
           <UIcon :name="busy ? 'i-lucide-loader-circle' : 'i-lucide-camera'" class="size-5" :class="busy ? 'animate-spin' : ''" />
-          Foto
+          {{ $t('photos.add') }}
         </button>
       </li>
     </ul>

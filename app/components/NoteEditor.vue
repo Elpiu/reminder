@@ -15,6 +15,7 @@ const time = ref(props.entry?.time ?? (props.date === todayKey() ? nowTime() : '
 const tagIds = ref<string[]>([...(props.entry?.tagIds ?? [])])
 const photoIds = ref<string[]>([...(props.entry?.photoIds ?? props.initialPhotos ?? [])])
 const saving = ref(false)
+const fmt = useFmt()
 const showMore = ref(!!props.entry && props.entry.tagIds.length > 0)
 
 const canSave = computed(() => text.value.trim().length > 0 || photoIds.value.length > 0)
@@ -45,8 +46,8 @@ async function remove() {
 
 <template>
   <UDrawer
-    :title="entry ? 'Modifica nota' : 'Nuova nota'"
-    :description="formatDayTitle(isDateKey(day) ? day : date)"
+    :title="entry ? $t('note.edit') : $t('note.new')"
+    :description="fmt.dayTitle(isDateKey(day) ? day : date)"
     :ui="{ container: 'max-w-xl mx-auto w-full' }"
   >
     <template #body>
@@ -57,8 +58,8 @@ async function remove() {
           :rows="5"
           :maxrows="16"
           autofocus
-          placeholder="Cosa vuoi ricordare?"
-          aria-label="Testo della nota"
+          :placeholder="$t('note.placeholder')"
+          :aria-label="$t('note.textAria')"
           class="w-full"
           :ui="{ base: 'font-serif text-base leading-relaxed' }"
           @keydown.ctrl.enter="save"
@@ -67,7 +68,7 @@ async function remove() {
         <PhotoPicker v-model="photoIds" />
         <UCollapsible v-model:open="showMore">
           <UButton
-            :label="showMore ? 'Meno opzioni' : 'Data, ora e tag'"
+            :label="showMore ? $t('note.less') : $t('note.more')"
             :trailing-icon="showMore ? 'i-lucide-chevron-up' : 'i-lucide-chevron-down'"
             color="neutral"
             variant="ghost"
@@ -75,13 +76,13 @@ async function remove() {
           />
           <template #content>
             <div class="grid grid-cols-2 gap-3 pt-3">
-              <UFormField label="Giorno">
+              <UFormField :label="$t('note.day')">
                 <UInput v-model="day" type="date" class="w-full" />
               </UFormField>
-              <UFormField label="Ora">
+              <UFormField :label="$t('note.time')">
                 <UInput v-model="time" type="time" class="w-full" />
               </UFormField>
-              <UFormField label="Tag" class="col-span-2">
+              <UFormField :label="$t('note.tags')" class="col-span-2">
                 <TagPicker v-model="tagIds" />
               </UFormField>
             </div>
@@ -91,11 +92,11 @@ async function remove() {
     </template>
     <template #footer>
       <div class="flex gap-2">
-        <UButton v-if="entry" icon="i-lucide-trash-2" color="error" variant="ghost" aria-label="Elimina nota" @click="remove" />
+        <UButton v-if="entry" icon="i-lucide-trash-2" color="error" variant="ghost" :aria-label="$t('note.deleteAria')" @click="remove" />
         <UButton
           type="submit"
           form="note-form"
-          label="Salva"
+          :label="$t('common.save')"
           icon="i-lucide-check"
           size="lg"
           block

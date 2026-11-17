@@ -25,3 +25,4 @@ description: 'Schermata principale: cosa fare e cosa è successo in un giorno'
 | [app/pages/index.vue](../../../../../../app/pages/index.vue) | [app/components/ActivityRow.vue](../../../../../../app/components/ActivityRow.vue) | Mostra le attività | Componente Vue |
 | [app/pages/index.vue](../../../../../../app/pages/index.vue) | [app/components/QuickAdd.vue](../../../../../../app/components/QuickAdd.vue) | Ospita la nota veloce | Componente Vue |
 | [app/pages/index.vue](../../../../../../app/pages/index.vue) | [app/components/InboxRow.vue](../../../../../../app/components/InboxRow.vue) | Mostra i promemoria | Componente Vue |
+| [app/pages/index.vue](../../../../../../app/pages/index.vue) | [app/composables/useFmt.ts](../../../../../../app/composables/useFmt.ts) | Mostra titoli e date | Composable Vue |

@@ -8,6 +8,7 @@ export function useBadgeSync() {
   const { count, refreshDay } = usePendingToday()
   let notified = false
   const base = useRuntimeConfig().app.baseURL
+  const { t } = useI18n()
 
   const nav = typeof navigator !== 'undefined'
     ? (navigator as Navigator & { setAppBadge?: (n?: number) => Promise<void>, clearAppBadge?: () => Promise<void> })
@@ -26,7 +27,7 @@ export function useBadgeSync() {
     if (notified || !prefs.value.notifyOnOpen || count.value === 0) return
     if (typeof Notification === 'undefined' || Notification.permission !== 'granted') return
     notified = true
-    const body = count.value === 1 ? 'Hai 1 cosa da fare oggi.' : `Hai ${count.value} cose da fare oggi.`
+    const body = t('notification.today', { n: count.value }, count.value)
     try {
       const reg = await navigator.serviceWorker?.getRegistration()
       if (reg) await reg.showNotification('Reminder', { body, icon: `${base}pwa-192x192.png`, badge: `${base}pwa-64x64.png`, tag: 'today' })

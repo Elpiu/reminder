@@ -54,8 +54,8 @@ describe('parseBackup v2', () => {
     expect(parsed.preferences.textScale).toBe('lg')
   })
   it('rifiuta versioni sconosciute e date non valide', () => {
-    expect(() => parseBackup({ version: 9 })).toThrow(/Versione/)
-    expect(() => parseBackup({ version: 2, data: { entries: [{ id: 'x', date: '2026-02-30' }] } })).toThrow(/data/)
+    expect(() => parseBackup({ version: 9 })).toThrow('backup.unsupportedVersion')
+    expect(() => parseBackup({ version: 2, data: { entries: [{ id: 'x', date: '2026-02-30' }] } })).toThrow('backup.invalidDate')
   })
 })
 

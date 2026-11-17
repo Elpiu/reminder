@@ -35,7 +35,7 @@ export async function readBackupFile(file: File): Promise<BackupData> {
     json = JSON.parse(await file.text())
   }
   catch {
-    throw new Error('Il file non è un JSON valido.')
+    throw new AppError('backup.invalidJson')
   }
   return parseBackup(json)
 }

@@ -106,7 +106,7 @@ describe('activityStats', () => {
     const a = activity({ startDate: '2026-11-02', recurrence: { type: 'weekly', times: 2 } })
     const entries = ['2026-11-02', '2026-11-04', '2026-11-09', '2026-11-12'].map(d => entry(d, true))
     const s = activityStats(a, entries, '2026-11-02', '2026-11-17')
-    expect(s.streakUnit).toBe('settimane')
+    expect(s.streakUnit).toBe('weeks')
     expect(s.currentStreak).toBe(2)
     expect(s.completed).toBe(2)
     expect(s.expected).toBe(3)
