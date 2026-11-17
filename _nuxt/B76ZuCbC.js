@@ -1,0 +1,1 @@
+var e={pwaInDevEnvironment:!1,webManifest:{href:`/reminder/manifest.webmanifest`,useCredentials:!1,linkTag:`<link rel="manifest" href="/reminder/manifest.webmanifest">`}};export{e as t};
