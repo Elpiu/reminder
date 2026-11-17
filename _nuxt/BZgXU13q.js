@@ -1,0 +1,1 @@
+import{G as e,V as t,h as n}from"./BkC9k4Fh.js";import{t as r}from"./BDNMzG2s.js";var i={},a={class:`mx-auto flex min-h-dvh w-full max-w-2xl flex-col safe-bottom`};function o(r,i){return t(),n(`div`,a,[e(r.$slots,`default`)])}var s=r(i,[[`render`,o]]);export{s as default};

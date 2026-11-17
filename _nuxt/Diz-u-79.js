@@ -1,0 +1,1 @@
+var e=class extends Error{code;params;constructor(e,t={}){super(e),this.code=e,this.params=t,this.name=`AppError`}};export{e as t};
