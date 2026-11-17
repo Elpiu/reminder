@@ -1,148 +1,88 @@
 # Reminder
 
-Reminder e una PWA offline-first pensata per tenere insieme calendario personale, note, cose da fare e piccoli promemoria ricorrenti. L'idea e semplice: apri l'app, scegli un giorno, scrivi quello che devi ricordare e lo ritrovi quando ti serve, anche senza connessione e senza creare account.
+Un diario quotidiano configurabile, installabile come app sul telefono e utilizzabile anche offline.
 
-L'app nasce per un uso quotidiano e personale. Non prova a diventare un gestionale complesso: vuole essere un posto rapido, locale e sempre disponibile dove salvare appuntamenti, idee, attivita, abitudini, spese, manutenzioni, commissioni o qualsiasi informazione legata a una giornata.
+Decidi tu cosa tenere d'occhio: abitudini, misure, faccende, umore. Ogni giorno Reminder ti mostra cosa c'è da fare e cosa hai già registrato. Accanto alle attività c'è un diario per pensieri, fatti e foto. Tutto resta sul tuo dispositivo, senza account.
 
-## Anteprima
-
-![Vista calendario](img/calendar.png)
-
-![Vista todo](img/todo.png)
-
-![Libreria categorie e tag](img/library.png)
+<p align="center"><img src="img/oggi.jpg" alt="Vista Oggi: attività del giorno, contatori, scala dell'umore e campo per una nota veloce" width="320"></p>
 
 ## Cosa puoi farci
 
-- Usare un calendario mensile come punto di partenza principale.
-- Creare note associate a una data specifica.
-- Vedere subito quali giorni hanno contenuti salvati.
-- Aggiungere titolo, descrizione, categoria e tag multipli alle note.
-- Gestire todo non datati, utili per attivita ancora senza scadenza precisa.
-- Convertire un todo completato in una nota del giorno corrente.
-- Salvare una nota come template ricorrente.
-- Copiare manualmente un template ricorrente nella giornata corrente.
-- Cercare note per testo, intervallo di date, categoria e tag.
-- Gestire una libreria locale di categorie e tag riutilizzabili.
-- Esportare, importare o resettare i dati locali.
-- Usare l'app come PWA installabile e cacheabile.
+- **Attività configurabili**, ognuna con il suo tipo di valore:
+  - fatto/non fatto;
+  - contatore;
+  - numero con unità;
+  - durata;
+  - scala (es. umore con emoji);
+  - scelta tra opzioni;
+  - testo.
+- **Ricorrenze vere**: ogni giorno, alcuni giorni della settimana, N volte a settimana, ogni N giorni, una volta al mese, oppure "quando capita".
+- **Obiettivi** come "almeno 8 bicchieri" o "al massimo 2 caffè", con un anello di avanzamento.
+- **Vista Oggi**: le attività previste, registrabili in uno o due tap, i promemoria dell'inbox e il diario del giorno. In fondo c'è un campo per scrivere una nota al volo.
+- **Diario** con più voci al giorno, ognuna con orario, tag e **foto**. Le foto vengono compresse sul dispositivo prima di essere salvate.
+- **Inbox** per le cose da fare senza data. Con una data compaiono anche nella vista di quel giorno; completate diventano voci del diario. Si gestiscono con uno swipe.
+- **Calendario** mensile con l'anello di completamento di ogni giorno e i segni per note e foto.
+- **Andamento**:
+  - serie attuale e record;
+  - percentuale di completamento;
+  - mappa annuale;
+  - grafico dei valori;
+  - distribuzione delle scelte.
+- **Ricerca** per testo, attività, tag e periodo.
+- **Primo avvio guidato** con pacchetti pronti (Benessere, Casa, Studio e lavoro) e una guida all'installazione.
+- **Annulla** al posto di "Sei sicuro?" per le eliminazioni.
+- **Badge** sull'icona dell'app con il numero di cose ancora da fare oggi, e una notifica opzionale all'apertura.
+- **Backup** JSON (con o senza foto), importazione e reset. L'app importa anche i backup della versione precedente.
+- Tema chiaro, scuro o automatico; dimensione del testo regolabile; accessibile da tastiera e da screen reader.
 
-## Filosofia del progetto
+> **Perché niente notifiche a orario?** Senza un server, il browser non permette di programmare notifiche affidabili ad app chiusa. Reminder usa il badge sull'icona e una notifica quando apri l'app.
 
-Reminder e progettata per funzionare prima di tutto sul telefono. La prima schermata non e una landing page, ma l'app vera: calendario, contenuti del giorno selezionato e azioni rapide.
+## Dalla versione precedente
 
-Tutti i dati restano sul dispositivo tramite IndexedDB. La v1 non prevede backend, account, cloud sync o notifiche push. Questa scelta rende l'app piu semplice, privata e adatta a essere usata anche offline.
+Se sul dispositivo c'erano i dati della vecchia app (Angular), al primo avvio vengono convertiti automaticamente:
 
-I "ricorrenti" non sono automazioni calendariali: sono template manuali. Questo significa che l'app non genera note future da sola; sei tu a copiare un modello nel giorno corrente quando ti serve.
+- note → voci del diario;
+- todo → inbox;
+- ricorrenti → attività;
+- categorie → tag.
 
-## Sezioni principali
+Lo stesso vale importando un vecchio file di backup.
 
-### Home
+## Sviluppo
 
-La Home ruota attorno al calendario mensile. I giorni con note vengono evidenziati direttamente nel calendario, insieme al giorno corrente e al giorno selezionato. Selezionando una data puoi leggere le note esistenti o aggiungerne una nuova.
-
-### Todo
-
-La sezione Todo raccoglie attivita non ancora legate a una data. Quando completi un todo puoi eliminarlo oppure trasformarlo in una nota del giorno corrente, mantenendo titolo, descrizione, categoria e tag.
-
-### Ricorrenti
-
-I ricorrenti sono modelli riutilizzabili. Puoi crearli partendo da una nota e poi copiarli rapidamente nel giorno corrente. Sono utili per abitudini, checklist, promemoria ripetuti o attivita che tornano spesso ma non devono essere generate in automatico.
-
-### Cerca
-
-La ricerca lavora sui dati locali e permette di filtrare le note per testo, range di date, categoria e tag. Serve per recuperare facilmente informazioni salvate nel tempo.
-
-### Libreria
-
-La Libreria contiene categorie e tag riutilizzabili. Le categorie hanno colore e icona; i tag aiutano a classificare note, todo e template in modo piu flessibile.
-
-## Stack tecnico
-
-- Angular 21
-- TypeScript
-- PrimeNG 21
-- PrimeIcons
-- TailwindCSS 4
-- NgRx Signals
-- idb-keyval / IndexedDB
-- Angular Service Worker per la modalita PWA
-- Vitest come test runner configurato dal progetto Angular
-
-## Architettura
-
-Il progetto segue una struttura leggera ma ordinata:
-
-- `src/app/app.ts`: shell principale e navigazione tra le sezioni.
-- `src/app/calendar-view/`: vista calendario e note giornaliere.
-- `src/app/todos-view/`: gestione dei todo non datati.
-- `src/app/recurring-view/`: gestione dei template ricorrenti.
-- `src/app/search-view/`: ricerca e filtri sulle note.
-- `src/app/settings-view/`: libreria, import/export e reset dati.
-- `src/app/shared/data-access/`: store e persistenza locale.
-- `src/app/shared/models/`: tipi e modelli del dominio.
-- `src/app/shared/ui/`: base UI condivisa tra le viste.
-- `docs/`: documentazione di prodotto e regole tecniche.
-
-## Documentazione
-
-La cartella `docs/` contiene i documenti di riferimento del progetto:
-
-- [Intent e feature](docs/project_intent_and_features.md)
-- [Tech stack e regole](docs/teck_stack_and_rules.md)
-
-## Avvio in locale
-
-Installa le dipendenze:
+Serve Node.js 22 o superiore con pnpm.
 
 ```bash
-npm install
+pnpm install
 ```
-
-Avvia il server di sviluppo:
 
 ```bash
-npm start
+pnpm dev
 ```
 
-Poi apri:
+| Comando | Cosa fa |
+|---|---|
+| `pnpm dev` | Server di sviluppo su http://localhost:3000 |
+| `pnpm build` | Build statica in `.output/public` |
+| `pnpm test` | Test Vitest (ricorrenze, statistiche, backup e migrazione) |
+| `pnpm typecheck` | Controllo dei tipi con vue-tsc |
+| `pnpm lint` | ESLint |
+| `pnpm icons` | Rigenera le icone PWA da `public/icon.svg` |
+| `pnpm build-and-publish` | Build con base `/reminder/` e pubblicazione su GitHub Pages |
 
-```text
-http://localhost:4200/
-```
-
-## Build
-
-Per creare una build di produzione:
+Su Windows, se lanci la build a mano da Git Bash con un base path, aggiungi `MSYS_NO_PATHCONV=1`. Altrimenti Git Bash trasforma `/reminder/` in un percorso Windows:
 
 ```bash
-npm run build
+MSYS_NO_PATHCONV=1 NUXT_APP_BASE_URL=/reminder/ pnpm build
 ```
 
-Gli artefatti vengono generati nella cartella `dist/`.
+## Stack
 
-## Test
+Nuxt 4 in modalità SPA · Vue 3.5 · TypeScript · Nuxt UI v4 · Tailwind CSS v4 · Dexie (IndexedDB) · @vite-pwa/nuxt · icone Lucide e font Inter/Literata inclusi nel bundle · Vitest · ESLint.
 
-Per eseguire i test configurati nel progetto:
+Dettagli e regole in [docs/tecnico.md](docs/tecnico.md); prodotto e funzionalità in [docs/prodotto.md](docs/prodotto.md).
 
-```bash
-npm test
-```
+## Gestione del progetto
 
-## Pubblicazione GitHub Pages
-
-Il progetto include uno script dedicato alla build e pubblicazione su GitHub Pages:
-
-```bash
-npm run build-and-publish
-```
-
-Lo script usa il `base-href`:
-
-```text
-https://elpiu.github.io/reminder/
-```
-
-## Dati e privacy
-
-Reminder salva i dati localmente nel browser, usando IndexedDB. Non c'e un backend remoto e non viene richiesta autenticazione. Se cancelli i dati del sito dal browser, anche i dati dell'app possono essere rimossi: usa export/import quando vuoi conservare una copia.
+- I task sono tracciati con [Backlog.md](https://github.com/MrLesk/Backlog.md): `backlog board` mostra la board, `backlog browser` la apre nel browser.
+- L'architettura è mappata con [groma.md](https://github.com/MrLesk/groma.md): `groma web` apre la mappa.

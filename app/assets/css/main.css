@@ -1,0 +1,76 @@
+@import "@fontsource-variable/inter";
+@import "@fontsource-variable/literata";
+@import "tailwindcss";
+@import "@nuxt/ui";
+
+@source "../../../shared";
+
+@theme {
+  --font-sans: "Inter Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: "Literata Variable", ui-serif, Georgia, serif;
+}
+
+:root {
+  --ui-bg: #fafaf9;
+  --ui-primary: var(--ui-color-primary-700);
+  --app-scale: 1;
+  --nav-h: 4rem;
+}
+
+.dark {
+  --ui-bg: #151311;
+  --ui-primary: var(--ui-color-primary-400);
+}
+
+html {
+  font-size: calc(100% * var(--app-scale));
+  overscroll-behavior-y: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  background: var(--ui-bg);
+  min-height: 100dvh;
+}
+
+.safe-top {
+  padding-top: env(safe-area-inset-top);
+}
+
+.safe-bottom {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* colore dell'attività passato come --act */
+.act-soft {
+  background-color: color-mix(in oklab, var(--act) 14%, transparent);
+}
+
+.act-text {
+  color: color-mix(in oklab, var(--act) 80%, var(--ui-text-highlighted));
+}
+
+.no-scrollbar {
+  scrollbar-width: none;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.diary-text {
+  font-family: var(--font-serif);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
