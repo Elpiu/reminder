@@ -23,7 +23,9 @@ Un diario quotidiano generalista e configurabile. L'utente decide cosa tracciare
 
 ### Attività
 Una cosa da tracciare nel tempo, con questi campi:
-- nome, icona Lucide e colore;
+- nome;
+- colore: uno dei 38 della palette (19 tinte, ognuna in tono vivo e scuro) o uno personalizzato;
+- icona: oltre 200 icone Lucide divise in 12 categorie;
 - tipo di valore:
   - `check`: fatto/non fatto;
   - `counter`: contatore;

@@ -104,7 +104,7 @@ const bestStreak = computed(() => rows.value.reduce<null | (typeof rows.value)[n
                   </p>
                 </div>
               </div>
-              <Heatmap class="mt-3" :to="today" :weeks="17" :values="r.heat" :color="ACTIVITY_COLORS[r.activity.color]" :week-start="prefs.weekStart" />
+              <Heatmap class="mt-3" :to="today" :weeks="17" :values="r.heat" :color="activityColor(r.activity.color)" :week-start="prefs.weekStart" />
             </NuxtLink>
           </li>
         </ul>

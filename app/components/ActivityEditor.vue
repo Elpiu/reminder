@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { Activity, ActivityColor, Recurrence, ValueKind } from '#shared/types/models'
+import type { Activity, Recurrence, ValueKind } from '#shared/types/models'
 
 const props = defineProps<{ activity?: Activity }>()
 const emit = defineEmits<{ close: [boolean] }>()
@@ -17,7 +17,6 @@ const saving = ref(false)
 const showIcons = ref(false)
 
 const kinds = (Object.keys(KIND_INFO) as ValueKind[]).map(k => ({ value: k, ...KIND_INFO[k] }))
-const colors = Object.keys(ACTIVITY_COLORS) as ActivityColor[]
 const hasGoal = computed(() => ['counter', 'number', 'duration'].includes(draft.kind))
 
 // ricorrenza
@@ -116,50 +115,22 @@ async function save() {
         <div class="flex items-end gap-3">
           <button
             type="button"
-            class="rounded-full focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+            class="relative rounded-full focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
             aria-label="Scegli icona e colore"
             :aria-expanded="showIcons"
             @click="showIcons = !showIcons"
           >
             <ActivityIcon :icon="draft.icon" :color="draft.color" size="lg" />
+            <span class="absolute -bottom-0.5 -right-0.5 flex size-5 items-center justify-center rounded-full border border-default bg-default text-muted">
+              <UIcon :name="showIcons ? 'i-lucide-chevron-up' : 'i-lucide-palette'" class="size-3" />
+            </span>
           </button>
           <UFormField label="Nome" class="flex-1">
             <UInput v-model="draft.name" size="lg" class="w-full" placeholder="Es. Bere acqua" autofocus />
           </UFormField>
         </div>
 
-        <div v-if="showIcons" class="space-y-3 rounded-xl border border-default p-3">
-          <div class="flex flex-wrap gap-2" role="radiogroup" aria-label="Colore">
-            <button
-              v-for="c in colors"
-              :key="c"
-              type="button"
-              role="radio"
-              :aria-checked="draft.color === c"
-              :aria-label="c"
-              class="size-8 rounded-full ring-offset-2 ring-offset-(--ui-bg) focus-visible:outline-2 focus-visible:outline-primary"
-              :class="draft.color === c ? 'ring-2 ring-(--ui-text-highlighted)' : ''"
-              :style="{ backgroundColor: ACTIVITY_COLORS[c] }"
-              @click="draft.color = c"
-            />
-          </div>
-          <div class="grid max-h-48 grid-cols-8 gap-1 overflow-y-auto" role="radiogroup" aria-label="Icona">
-            <button
-              v-for="i in ACTIVITY_ICONS"
-              :key="i"
-              type="button"
-              role="radio"
-              :aria-checked="draft.icon === i"
-              :aria-label="i.replace('i-lucide-', '')"
-              class="flex aspect-square items-center justify-center rounded-lg hover:bg-elevated focus-visible:outline-2 focus-visible:outline-primary"
-              :class="draft.icon === i ? 'act-soft act-text' : 'text-muted'"
-              :style="{ '--act': ACTIVITY_COLORS[draft.color] }"
-              @click="draft.icon = i"
-            >
-              <UIcon :name="i" class="size-5" />
-            </button>
-          </div>
-        </div>
+        <AppearancePicker v-if="showIcons" v-model:icon="draft.icon" v-model:color="draft.color" />
 
         <!-- tipo -->
         <fieldset>

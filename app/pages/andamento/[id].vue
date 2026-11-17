@@ -151,7 +151,7 @@ const menu = computed(() => activity.value
         <h2 id="map-title" class="mb-2 text-sm font-semibold uppercase tracking-wide text-muted">
           Ultimo anno
         </h2>
-        <Heatmap :to="today" :weeks="53" :values="heat" :color="ACTIVITY_COLORS[activity.color]" :week-start="prefs.weekStart" />
+        <Heatmap :to="today" :weeks="53" :values="heat" :color="activityColor(activity.color)" :week-start="prefs.weekStart" />
       </section>
 
       <section v-if="numeric" aria-labelledby="chart-title">
@@ -160,7 +160,7 @@ const menu = computed(() => activity.value
         </h2>
         <BarChart
           :points="chart"
-          :color="ACTIVITY_COLORS[activity.color]"
+          :color="activityColor(activity.color)"
           :goal="activity.kind === 'scale' ? null : activity.goal?.target"
           :format="fmt"
         />

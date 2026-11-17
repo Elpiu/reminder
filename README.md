@@ -8,7 +8,7 @@ Decidi tu cosa tenere d'occhio: abitudini, misure, faccende, umore. Ogni giorno 
 
 ## Cosa puoi farci
 
-- **Attività configurabili**, ognuna con il suo tipo di valore:
+- **Attività configurabili**, ognuna con un colore (38 della palette o uno personalizzato), una delle oltre 200 icone divise per categoria e il suo tipo di valore:
   - fatto/non fatto;
   - contatore;
   - numero con unità;
@@ -68,7 +68,11 @@ pnpm dev
 | `pnpm typecheck` | Controllo dei tipi con vue-tsc |
 | `pnpm lint` | ESLint |
 | `pnpm icons` | Rigenera le icone PWA da `public/icon.svg` |
-| `pnpm build-and-publish` | Build con base `/reminder/` e pubblicazione su GitHub Pages |
+| `pnpm build-and-publish` | Build con base `/reminder/` e pubblicazione manuale su GitHub Pages |
+
+### Deploy
+
+Ogni push su `master` avvia il workflow [deploy.yml](.github/workflows/deploy.yml): test, lint, build con base `/reminder/` e pubblicazione sul branch `gh-pages`, da cui GitHub Pages serve https://elpiu.github.io/reminder/. Si può anche lanciare a mano dalla scheda Actions.
 
 Su Windows, se lanci la build a mano da Git Bash con un base path, aggiungi `MSYS_NO_PATHCONV=1`. Altrimenti Git Bash trasforma `/reminder/` in un percorso Windows:
 

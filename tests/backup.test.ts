@@ -58,3 +58,18 @@ describe('parseBackup v2', () => {
     expect(() => parseBackup({ version: 2, data: { entries: [{ id: 'x', date: '2026-02-30' }] } })).toThrow(/data/)
   })
 })
+
+describe('colori attività', () => {
+  it('accetta chiavi della palette e colori personalizzati, con ripiego', async () => {
+    const { activityColor, isActivityColor, COLOR_SWATCHES, ACTIVITY_ICONS } = await import('../shared/utils/catalog')
+    expect(COLOR_SWATCHES.length).toBeGreaterThanOrEqual(36)
+    expect(ACTIVITY_ICONS.length).toBeGreaterThan(200)
+    expect(isActivityColor('teal-dark')).toBe(true)
+    expect(isActivityColor('#12abEF')).toBe(true)
+    expect(isActivityColor('verde')).toBe(false)
+    expect(activityColor('#123456')).toBe('#123456')
+    expect(activityColor('inesistente')).toBe('#14b8a6')
+    const parsed = parseBackup({ version: 2, data: { activities: [{ id: 'a', name: 'X', color: '#abcdef' }, { id: 'b', name: 'Y', color: 'boh' }] } })
+    expect(parsed.activities.map(a => a.color)).toEqual(['#abcdef', 'teal'])
+  })
+})

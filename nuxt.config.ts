@@ -72,6 +72,8 @@ export default defineNuxtConfig({
     },
     generateSW: {
       globPatterns: ['**/*.{js,css,html,png,svg,ico,woff2,webmanifest}'],
+      // service worker di sicurezza per la vecchia app Angular: non va messo in cache
+      globIgnores: ['ngsw-worker.js'],
     },
     client: {
       installPrompt: true,

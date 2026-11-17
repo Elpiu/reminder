@@ -62,7 +62,7 @@ function openSheet() {
   <li
     class="rounded-xl border border-default bg-elevated/40 p-3 transition-colors"
     :class="[done ? 'border-transparent' : '', item.status === 'weekDone' ? 'opacity-70' : '']"
-    :style="{ '--act': ACTIVITY_COLORS[a.color] }"
+    :style="{ '--act': activityColor(a.color) }"
   >
     <div class="flex items-center gap-3">
       <button

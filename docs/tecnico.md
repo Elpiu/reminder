@@ -47,7 +47,8 @@ tests/                  Vitest sulla logica in shared/
 - **Date**: sono chiavi locali `YYYY-MM-DD`. I timestamp tecnici sono ISO.
 - **Concorrenza**: letture e scritture concorrenti (es. tap rapidi sul contatore) stanno nella stessa transazione Dexie.
 - **Copie di dati**: si fanno con `plain()` (copia JSON). `structuredClone` fallisce sugli oggetti reattivi di Vue.
-- **Colori delle attività**: si passano come variabile CSS `--act`, con le classi `act-soft` e `act-text`. Mai colori fissi nel template.
+- **Colori delle attività**: sono una chiave della palette (`teal`, `teal-dark`, …) o un `#rrggbb` personalizzato; si risolvono con `activityColor()` e si passano come variabile CSS `--act`, con le classi `act-soft` e `act-text`. Mai colori fissi nel template.
+- **Icone delle attività**: si scelgono da `ICON_CATEGORIES` in `shared/utils/catalog.ts`; tutte finiscono in `icon.clientBundle.icons`, quindi un'icona nuova va aggiunta lì (e serve riavviare `pnpm dev`).
 - **Stile**:
   - colori semantici di Nuxt UI (`bg-default`, `bg-elevated`, `text-muted`, `text-highlighted`, `border-default`);
   - card `rounded-xl border border-default bg-elevated/40 p-3`;
@@ -60,6 +61,8 @@ tests/                  Vitest sulla logica in shared/
 
 ## Deploy
 
-- `pnpm build-and-publish` genera la build con base `/reminder/` e la pubblica su GitHub Pages con `gh-pages`.
+- **Automatico**: [.github/workflows/deploy.yml](../.github/workflows/deploy.yml) parte a ogni push su `master` (o a mano da Actions). Installa con pnpm, esegue test e lint, genera la build con `NUXT_APP_BASE_URL=/reminder/` e la pubblica sul branch `gh-pages` con `peaceiris/actions-gh-pages`. GitHub Pages deve servire il branch `gh-pages`, come già avveniva per la v1.
+- **Manuale**: `pnpm build-and-publish` fa la stessa build e la pubblica con `gh-pages`.
 - `public/.nojekyll` evita che Jekyll ignori la cartella `_nuxt`.
+- `public/ngsw-worker.js` sostituisce il service worker della vecchia app Angular: chi l'aveva installata riceve questo file all'aggiornamento, che cancella le cache Angular, si disinstalla e ricarica la pagina sulla nuova app. È escluso dalla precache.
 - Da Git Bash su Windows, nelle build manuali con base path serve `MSYS_NO_PATHCONV=1`.

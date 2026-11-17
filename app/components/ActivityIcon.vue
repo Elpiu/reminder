@@ -19,7 +19,7 @@ const circ = computed(() => 2 * Math.PI * r.value)
   <span
     class="relative inline-flex shrink-0 items-center justify-center rounded-full transition-colors"
     :class="done ? 'text-white' : 'act-soft act-text'"
-    :style="{ '--act': ACTIVITY_COLORS[color], 'width': `${px}px`, 'height': `${px}px`, 'backgroundColor': done ? ACTIVITY_COLORS[color] : undefined }"
+    :style="{ '--act': activityColor(color), 'width': `${px}px`, 'height': `${px}px`, 'backgroundColor': done ? activityColor(color) : undefined }"
   >
     <svg
       v-if="progress !== undefined && !done"

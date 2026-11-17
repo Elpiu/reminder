@@ -1,34 +1,83 @@
 import type { Activity, ActivityColor, ValueKind } from '../types/models'
 
-/** Icone selezionabili per le attività (incluse nel bundle: vedi nuxt.config). */
-export const ACTIVITY_ICONS = [
-  'i-lucide-circle-check', 'i-lucide-droplet', 'i-lucide-glass-water', 'i-lucide-coffee', 'i-lucide-apple',
-  'i-lucide-salad', 'i-lucide-utensils', 'i-lucide-pill', 'i-lucide-heart-pulse', 'i-lucide-bed',
-  'i-lucide-moon', 'i-lucide-sun', 'i-lucide-smile', 'i-lucide-brain', 'i-lucide-flower-2',
-  'i-lucide-footprints', 'i-lucide-bike', 'i-lucide-dumbbell', 'i-lucide-activity', 'i-lucide-scale',
-  'i-lucide-book-open', 'i-lucide-graduation-cap', 'i-lucide-languages', 'i-lucide-pen-line', 'i-lucide-notebook-pen',
-  'i-lucide-laptop', 'i-lucide-briefcase', 'i-lucide-mail', 'i-lucide-phone', 'i-lucide-users',
-  'i-lucide-house', 'i-lucide-spray-can', 'i-lucide-washing-machine', 'i-lucide-shopping-cart', 'i-lucide-trash-2',
-  'i-lucide-sprout', 'i-lucide-dog', 'i-lucide-cat', 'i-lucide-baby', 'i-lucide-car',
-  'i-lucide-wallet', 'i-lucide-piggy-bank', 'i-lucide-receipt', 'i-lucide-music', 'i-lucide-guitar',
-  'i-lucide-palette', 'i-lucide-camera', 'i-lucide-gamepad-2', 'i-lucide-tv', 'i-lucide-smartphone',
-  'i-lucide-cigarette-off', 'i-lucide-wine-off', 'i-lucide-timer', 'i-lucide-star', 'i-lucide-flame',
-  'i-lucide-target', 'i-lucide-repeat', 'i-lucide-calendar-check', 'i-lucide-sparkles', 'i-lucide-leaf',
-] as const
+const lucide = (names: string) => names.trim().split(/\s+/).map(n => `i-lucide-${n}`)
 
-export const ACTIVITY_COLORS: Record<ActivityColor, string> = {
-  teal: '#14b8a6',
-  emerald: '#10b981',
-  lime: '#84cc16',
-  amber: '#f59e0b',
-  orange: '#f97316',
-  rose: '#f43f5e',
-  fuchsia: '#d946ef',
-  violet: '#8b5cf6',
-  indigo: '#6366f1',
-  sky: '#0ea5e9',
-  cyan: '#06b6d4',
-  stone: '#78716c',
+/** Icone selezionabili per le attività, divise per categoria (tutte incluse nel bundle: vedi nuxt.config). */
+export const ICON_CATEGORIES: { id: string, label: string, icons: string[] }[] = [
+  { id: 'salute', label: 'Salute', icons: lucide(`circle-check heart heart-pulse pill pill-bottle syringe stethoscope thermometer activity brain
+    eye ear smile smile-plus laugh meh frown bed bed-double moon moon-star sun sunrise sunset scale cigarette-off wine-off
+    hand-heart bandage cross shield-plus droplet droplets flower-2`) },
+  { id: 'sport', label: 'Sport', icons: lucide(`footprints bike dumbbell trophy medal volleyball goal waves mountain mountain-snow tent
+    person-standing timer flame zap target swords sailboat`) },
+  { id: 'cibo', label: 'Cibo', icons: lucide(`apple banana carrot cherry citrus grape salad soup sandwich pizza croissant cookie cake-slice
+    ice-cream-cone egg-fried beef fish drumstick utensils utensils-crossed chef-hat coffee cup-soda glass-water milk beer wine martini`) },
+  { id: 'casa', label: 'Casa', icons: lucide(`house sofa lamp bath shower-head bed-single washing-machine refrigerator microwave spray-can
+    brush paint-roller hammer wrench drill plug lightbulb key door-open trash-2 recycle shirt sprout flower trees`) },
+  { id: 'lavoro', label: 'Lavoro e studio', icons: lucide(`briefcase laptop monitor keyboard smartphone mail inbox phone calendar calendar-check
+    clipboard-list file-text folder presentation chart-line chart-pie printer pen-line pencil notebook-pen book-open book
+    library graduation-cap school languages code`) },
+  { id: 'tempo', label: 'Tempo libero', icons: lucide(`music headphones guitar piano mic tv film clapperboard gamepad-2 dice-5 puzzle palette
+    camera image book-heart drama ticket plane map compass globe tent-tree`) },
+  { id: 'natura', label: 'Natura', icons: lucide('leaf leafy-green tree-pine tree-deciduous cloud cloud-rain snowflake rainbow umbrella wind shell bug') },
+  { id: 'animali', label: 'Animali', icons: lucide('dog cat bird fish-symbol rabbit turtle squirrel paw-print rat snail') },
+  { id: 'persone', label: 'Persone', icons: lucide('user users baby heart-handshake hand handshake message-circle phone-call gift party-popper cake church') },
+  { id: 'finanze', label: 'Soldi', icons: lucide(`wallet piggy-bank coins banknote credit-card receipt shopping-cart shopping-bag store tag badge-euro
+    landmark chart-candlestick`) },
+  { id: 'trasporti', label: 'Trasporti', icons: lucide('car bus train-front tram-front plane-takeoff ship fuel parking-meter scooter') },
+  { id: 'simboli', label: 'Simboli', icons: lucide(`square-check check star sparkles repeat calendar-days clock alarm-clock bell bell-ring flag
+    bookmark pin map-pin infinity hash award crown gem rocket anchor feather sticker`) },
+]
+
+/** Tutte le icone selezionabili, senza duplicati. */
+export const ACTIVITY_ICONS: string[] = [...new Set(ICON_CATEGORIES.flatMap(c => c.icons))]
+
+export interface ColorSwatch {
+  key: string
+  label: string
+  hex: string
+}
+
+const HUES: [key: string, label: string, base: string, dark: string][] = [
+  ['red', 'Rosso', '#ef4444', '#b91c1c'],
+  ['orange', 'Arancione', '#f97316', '#c2410c'],
+  ['amber', 'Ambra', '#f59e0b', '#b45309'],
+  ['yellow', 'Giallo', '#eab308', '#a16207'],
+  ['lime', 'Lime', '#84cc16', '#4d7c0f'],
+  ['green', 'Verde', '#22c55e', '#15803d'],
+  ['emerald', 'Smeraldo', '#10b981', '#047857'],
+  ['teal', 'Verde acqua', '#14b8a6', '#0f766e'],
+  ['cyan', 'Ciano', '#06b6d4', '#0e7490'],
+  ['sky', 'Cielo', '#0ea5e9', '#0369a1'],
+  ['blue', 'Blu', '#3b82f6', '#1d4ed8'],
+  ['indigo', 'Indaco', '#6366f1', '#4338ca'],
+  ['violet', 'Viola', '#8b5cf6', '#6d28d9'],
+  ['purple', 'Porpora', '#a855f7', '#7e22ce'],
+  ['fuchsia', 'Fucsia', '#d946ef', '#a21caf'],
+  ['pink', 'Rosa', '#ec4899', '#be185d'],
+  ['rose', 'Rosa antico', '#f43f5e', '#be123c'],
+  ['slate', 'Ardesia', '#64748b', '#334155'],
+  ['stone', 'Pietra', '#78716c', '#44403c'],
+]
+
+/** Palette: per ogni tinta un tono vivo e uno scuro. */
+export const COLOR_SWATCHES: ColorSwatch[] = HUES.flatMap(([key, label, base, dark]) => [
+  { key, label, hex: base },
+  { key: `${key}-dark`, label: `${label} scuro`, hex: dark },
+])
+
+export const ACTIVITY_COLORS: Record<string, string> = Object.fromEntries(COLOR_SWATCHES.map(s => [s.key, s.hex]))
+
+const HEX = /^#[0-9a-f]{6}$/i
+
+/** Un colore attività valido: chiave della palette o colore personalizzato `#rrggbb`. */
+export function isActivityColor(value: unknown): value is ActivityColor {
+  return typeof value === 'string' && (value in ACTIVITY_COLORS || HEX.test(value))
+}
+
+/** Colore esadecimale di un'attività (palette o personalizzato), con ripiego sul verde acqua. */
+export function activityColor(color: ActivityColor | null | undefined): string {
+  if (!color) return ACTIVITY_COLORS.teal!
+  return ACTIVITY_COLORS[color] ?? (HEX.test(color) ? color : ACTIVITY_COLORS.teal!)
 }
 
 export const KIND_INFO: Record<ValueKind, { label: string, hint: string, icon: string }> = {

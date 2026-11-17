@@ -22,9 +22,8 @@ export interface Goal {
   target: number
 }
 
-export type ActivityColor =
-  | 'teal' | 'emerald' | 'lime' | 'amber' | 'orange' | 'rose'
-  | 'fuchsia' | 'violet' | 'indigo' | 'sky' | 'cyan' | 'stone'
+/** Chiave della palette (es. `teal`, `teal-dark`) oppure colore personalizzato `#rrggbb`. */
+export type ActivityColor = string
 
 export interface Activity {
   id: string

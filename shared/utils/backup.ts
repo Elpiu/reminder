@@ -3,6 +3,7 @@ import type {
   Preferences, Recurrence, Tag, ValueKind,
 } from '../types/models'
 import { isDateKey, nowTime, toDateKey } from './dates'
+import { isActivityColor } from './catalog'
 
 export const BACKUP_VERSION = 2
 
@@ -77,7 +78,7 @@ export function normalizeActivity(input: unknown): Activity {
     id: reqId(input, 'attività'),
     name: str(input.name, 'Attività'),
     icon: str(input.icon, 'i-lucide-circle-check'),
-    color: COLORS.includes(input.color as ActivityColor) ? (input.color as ActivityColor) : 'teal',
+    color: isActivityColor(input.color) ? input.color : 'teal',
     kind,
     unit: str(input.unit),
     goal: normalizeGoal(input.goal),

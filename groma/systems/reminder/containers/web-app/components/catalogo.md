@@ -15,4 +15,4 @@ groma:
 description: Icone, colori, tipi di valore e pacchetti di attività pronti
 ---
 
-Elenca le icone Lucide selezionabili (incluse nel bundle), la palette dei colori delle attività, le etichette dei tipi di valore e i pacchetti iniziali Benessere, Casa e Studio e lavoro.
+Elenca le icone Lucide selezionabili per categoria (tutte incluse nel bundle tramite la configurazione), la palette dei colori delle attività con le funzioni che risolvono una chiave o un colore personalizzato `#rrggbb`, le etichette dei tipi di valore e i pacchetti iniziali Benessere, Casa e Studio e lavoro.
